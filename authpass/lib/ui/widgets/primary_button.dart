@@ -31,10 +31,17 @@ class PrimaryButton extends StatelessWidget {
     return Theme(
       data: _createMainButtonTheme(
         theme,
-        large: large,
+        // large: large,
       ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0), // Adjust the radius as needed
+          side: BorderSide(
+            color: Colors.grey, // Border color
+            width: 1.0,          // Border width
+          ),
+        ),
             foregroundColor: theme.colorScheme.onPrimary,
             backgroundColor: theme.colorScheme.primary,
             elevation: 0,

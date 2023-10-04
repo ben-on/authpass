@@ -460,18 +460,16 @@ class _EntryDetailsState extends State<EntryDetails>
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment : MainAxisAlignment.spaceBetween,
                 children: [
-                  
-                     GestureDetector(
-                        onTap: () {
-                          
-                        },
-                        child: CustomButton()),
-                  
+                   CustomIconButton(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                   CustomIconButton(),
                    SizedBox(width: 30),
+                  PrimaryButton(
+                    icon: const Icon(Icons.save),
+                    onPressed: widget.onSavedPressed,
+                    child: Text(loc.saveButtonLabel),
+                  ),
         
                           AppBarMenu.createOverflowMenuButton(
           context,
@@ -710,11 +708,6 @@ class _EntryDetailsState extends State<EntryDetails>
               child: Text(loc.entryAddAttachment),
             ),
             const SizedBox(height: 16),
-            PrimaryButton(
-              icon: const Icon(Icons.save),
-              onPressed: widget.onSavedPressed,
-              child: Text(loc.saveButtonLabel),
-            ),
           ],
         ),
       ),

@@ -127,7 +127,10 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
       appBar: AppBar(
         toolbarHeight: width * 0.04,
         elevation: width * 0.002,
-        leading: Image.asset(AssetConstants.logoIcon),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: Image.asset(AssetConstants.logoIcon),
+        ),
         centerTitle: true,
         title: Center(
             child: Row(
