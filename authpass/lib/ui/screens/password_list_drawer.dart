@@ -43,21 +43,7 @@ class _PasswordListDrawerState extends State<PasswordListDrawer> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Material(
-          color: theme.primaryColor,
-          elevation: 2,
-//          decoration: BoxDecoration(color: theme.primaryColor),
-//          padding: const EdgeInsets.all(16),
-          child: Container(
-            padding: const EdgeInsets.all(16) +
-                MediaQuery.of(context).padding.onlyTop,
-            alignment: Alignment.bottomLeft,
-            child: Text(
-              Env.AuthPass,
-              style: theme.primaryTextTheme.displaySmall,
-            ),
-          ),
-        ),
+       
         Expanded(
           child: GroupListBuilder(
             rootGroup: null,

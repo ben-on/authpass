@@ -422,6 +422,7 @@ class _PasswordListContentState extends State<PasswordListContent>
   List<EntryViewModel>? _filteredEntries;
 
   String? get _filterQuery => __filterQuery;
+  late final AddNewEntry;
 
   set _filterQuery(String? filterQuery) {
     __filterQuery = filterQuery;
@@ -853,12 +854,12 @@ class _PasswordListContentState extends State<PasswordListContent>
       systemOverlayStyle: theme.brightness == Brightness.dark
           ? SystemUiOverlayStyle.light
           : SystemUiOverlayStyle.dark,
-        automaticallyImplyLeading: false,
-     
+      automaticallyImplyLeading: false,
+
       title: Theme(
         data: theme,
         child: SizedBox(
-          height: width  * 0.022,
+          height: width * 0.022,
           child: TextField(
             textAlignVertical: TextAlignVertical.bottom,
             style: theme.textTheme.titleSmall,
@@ -873,10 +874,16 @@ class _PasswordListContentState extends State<PasswordListContent>
             autofocus: true,
             decoration: InputDecoration(
               hintText: loc.searchHint,
-              border: OutlineInputBorder(borderSide: const BorderSide(color: Color.fromARGB(201, 158, 158, 158)), borderRadius: BorderRadius.circular(width * 0.01)),
-              focusedBorder: OutlineInputBorder(borderSide:  BorderSide(color: Color.fromARGB(219, 146, 193, 247), width: width * 0.0025), borderRadius: BorderRadius.circular(width * 0.02)),
+              border: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                      color: Color.fromARGB(201, 158, 158, 158)),
+                  borderRadius: BorderRadius.circular(width * 0.01)),
+              focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Color.fromARGB(219, 146, 193, 247),
+                      width: width * 0.0025),
+                  borderRadius: BorderRadius.circular(width * 0.02)),
               hintStyle: theme.inputDecorationTheme.hintStyle,
-        
             ),
           ),
         ),
@@ -1090,14 +1097,10 @@ class _PasswordListContentState extends State<PasswordListContent>
     final theme = Theme.of(context);
     final kdbxBloc = Provider.of<KdbxBloc>(context);
     final loc = AppLocalizations.of(context);
-    return Actions(
-      dispatcher: LoggingActionDispatcher(),
-      actions: {
-        SearchIntent: SearchAction(this),
-      },
-      child: Scaffold(
-        appBar: _buildFilterAppBar(context),
-        drawer: Drawer(
+    
+    return Row(
+      children: [
+        Expanded(
           child: PasswordListDrawer(
             initialSelection: _groupFilter.groups.map((e) => e.group).toSet(),
             selectionChanged: (Set<KdbxGroup> selection) {
@@ -1105,106 +1108,128 @@ class _PasswordListContentState extends State<PasswordListContent>
             },
           ),
         ),
-        body: ProgressOverlay(
-          task: task,
-          child: _allEntries!.isEmpty
-              ? NoPasswordsEmptyView(
-                  listPrefix: listPrefix,
-                  onPrimaryButtonPressed: () {
-                    final kdbxBloc =
-                        Provider.of<KdbxBloc>(context, listen: false);
-                    final entry = kdbxBloc.createEntry();
-//                Navigator.of(context).push(EntryDetailsScreen.route(entry: entry));
-                    widget.onEntrySelected(
-                        context, entry, EntrySelectionType.activeOpen);
-                  },
-                )
-              : Scrollbar(
-                  child: ListView.builder(
-                    itemCount: entries!.length + 1,
-                    itemBuilder: (context, index) {
-                      // handle [listPrefix]
-                      if (index == 0) {
-                        if (listPrefix.isEmpty) {
-                          return const SizedBox();
-                        }
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: listPrefix,
-                        );
-                      }
-                      index--;
-
-                      final entry = entries[index];
-
-                      final openedFile =
-                          kdbxBloc.fileForKdbxFile(entry.entry.file);
-                      final fileColor = openedFile.openedFile.color;
-//                _logger.finer('listview item. selectedEntry: ${widget.selectedEntry}');
-                      return PasswordEntryListTileWrapper(
-                        entry: entry,
-                        fileColor: fileColor,
-                        filterQuery: _filterQuery,
-                        selectedEntry: widget.selectedEntry,
-                        onEntrySelected:
-                            (KdbxEntry entry, EntrySelectionType type) {
-                          widget.onEntrySelected(context, entry, type);
-                        },
-                      );
-                    },
-                  ),
-                ),
-        ),
-        floatingActionButton: _allEntries!.isEmpty ||
-                _filterQuery != null ||
-                _autofillMetadata != null
-            ? null
-            : kdbxBloc.openedFiles.length == 1 ||
-                    _groupFilter.groups.length == 1
-                ? FloatingActionButton(
-                    tooltip: loc.addNewPassword,
-                    onPressed: () {
-                      final group = _groupFilter.groups.isEmpty
-                          ? null
-                          : _groupFilter.groups.first.group;
-                      final entry = kdbxBloc.createEntry(
-                        file: group?.file,
-                        group: group,
-                      );
-                      widget.onEntrySelected(
-                          context, entry, EntrySelectionType.activeOpen);
-                    },
-                    child: const Icon(Icons.add),
-                  )
-                : SpeedDial(
-                    tooltip: _speedDialOpen
-                        ? CharConstants.empty
-                        : loc.addNewPassword,
-                    onOpen: () => setState(() => _speedDialOpen = true),
-                    onClose: () => setState(() => _speedDialOpen = false),
-                    overlayColor: theme.brightness == Brightness.dark
-                        ? Colors.black
-                        : Colors.white,
-                    children: kdbxBloc.openedFiles.values
-                        .map(
-                          (file) => SpeedDialChild(
-                              label: file.fileSource.displayName,
-                              child: Icon(file.fileSource.displayIcon.iconData),
-                              labelBackgroundColor: Theme.of(context).cardColor,
-                              backgroundColor: file.openedFile.colorCode == null
-                                  ? null
-                                  : Color(file.openedFile.colorCode!),
-                              onTap: () {
-                                final entry =
-                                    kdbxBloc.createEntry(file: file.kdbxFile);
+        Expanded(
+          child: Actions(
+            dispatcher: LoggingActionDispatcher(),
+            actions: {
+              SearchIntent: SearchAction(this),
+            },
+            child: Scaffold(
+              appBar: _buildFilterAppBar(context),
+              backgroundColor: Colors.white,
+              body: Row(
+                children: [
+                  Expanded(
+                    child: ProgressOverlay(
+                      task: task,
+                      child: _allEntries!.isEmpty
+                          ? NoPasswordsEmptyView(
+                              listPrefix: listPrefix,
+                              onPrimaryButtonPressed: () {
+                                final kdbxBloc = Provider.of<KdbxBloc>(context,
+                                    listen: false);
+                                final entry = kdbxBloc.createEntry();
+                                //                Navigator.of(context).push(EntryDetailsScreen.route(entry: entry));
                                 widget.onEntrySelected(context, entry,
                                     EntrySelectionType.activeOpen);
-                              }),
-                        )
-                        .toList(),
-                    child: Icon(_speedDialOpen ? Icons.close : Icons.add),
+                              },
+                            )
+                          : Scrollbar(
+                              child: ListView.builder(
+                                itemCount: entries!.length + 1,
+                                itemBuilder: (context, index) {
+                                  // handle [listPrefix]
+                                  if (index == 0) {
+                                    if (listPrefix.isEmpty) {
+                                      return const SizedBox();
+                                    }
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: listPrefix,
+                                    );
+                                  }
+                                  index--;
+
+                                  final entry = entries[index];
+
+                                  final openedFile = kdbxBloc
+                                      .fileForKdbxFile(entry.entry.file);
+                                  final fileColor = openedFile.openedFile.color;
+                                  //                _logger.finer('listview item. selectedEntry: ${widget.selectedEntry}');
+                                  return PasswordEntryListTileWrapper(
+                                    entry: entry,
+                                    fileColor: fileColor,
+                                    filterQuery: _filterQuery,
+                                    selectedEntry: widget.selectedEntry,
+                                    onEntrySelected: (KdbxEntry entry,
+                                        EntrySelectionType type) {
+                                      widget.onEntrySelected(
+                                          context, entry, type);
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                    ),
                   ),
-      ),
+                ],
+              ),
+              floatingActionButton: _allEntries!.isEmpty ||
+                      _filterQuery != null ||
+                      _autofillMetadata != null
+                  ? null
+                  : kdbxBloc.openedFiles.length == 1 ||
+                          _groupFilter.groups.length == 1
+                      ? FloatingActionButton(
+                          tooltip: loc.addNewPassword,
+                          onPressed: () {
+                            final group = _groupFilter.groups.isEmpty
+                                ? null
+                                : _groupFilter.groups.first.group;
+                            final entry = kdbxBloc.createEntry(
+                              file: group?.file,
+                              group: group,
+                            );
+                            widget.onEntrySelected(
+                                context, entry, EntrySelectionType.activeOpen);
+                          },
+                          child: const Icon(Icons.add),
+                        )
+                      : SpeedDial(
+                          tooltip: _speedDialOpen
+                              ? CharConstants.empty
+                              : loc.addNewPassword,
+                          onOpen: () => setState(() => _speedDialOpen = true),
+                          onClose: () => setState(() => _speedDialOpen = false),
+                          overlayColor: theme.brightness == Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
+                          children: kdbxBloc.openedFiles.values
+                              .map(
+                                (file) => SpeedDialChild(
+                                    label: file.fileSource.displayName,
+                                    child: Icon(
+                                        file.fileSource.displayIcon.iconData),
+                                    labelBackgroundColor:
+                                        Theme.of(context).cardColor,
+                                    backgroundColor:
+                                        file.openedFile.colorCode == null
+                                            ? null
+                                            : Color(file.openedFile.colorCode!),
+                                    onTap: () {
+                                      final entry = kdbxBloc.createEntry(
+                                          file: file.kdbxFile);
+                                      widget.onEntrySelected(context, entry,
+                                          EntrySelectionType.activeOpen);
+                                    }),
+                              )
+                              .toList(),
+                          child: Icon(_speedDialOpen ? Icons.close : Icons.add),
+                        ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -1295,6 +1320,8 @@ class SearchAction extends Action<SearchIntent> {
   }
 }
 
+class CreateNewEntryDetail {}
+
 class PasswordEntryListTileWrapper extends StatelessWidget {
   const PasswordEntryListTileWrapper({
     Key? key,
@@ -1371,23 +1398,19 @@ class PasswordEntryListTileWrapper extends StatelessWidget {
           padding: const EdgeInsets.only(right: 8.0),
           child: Container(
             decoration: selectedEntry != entry.entry
-                ? (fileColor == null
-                    ? null
-                    : BoxDecoration(
-                        border: Border(
-                            left: BorderSide(color: fileColor!, width: 4))))
+                ? (fileColor == null ? null : null)
                 : BoxDecoration(
                     color: theme.listTileTheme.selectedTileColor ??
                         (theme.brightness == Brightness.dark
                             ? Colors.grey[800]
                             : Colors.grey[100]),
-                    border: Border(
-                      right: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 4),
-                      left: fileColor == null
-                          ? BorderSide.none
-                          : BorderSide(color: fileColor!, width: 4),
-                    ),
+                    // border: Border(
+                    //   right: BorderSide(
+                    //       color: Theme.of(context).primaryColor, width: 4),
+                    //   left: fileColor == null
+                    //       ? BorderSide.none
+                    //       : BorderSide(color: fileColor!, width: 4),
+                    // ),
                   ),
             child: PasswordEntryTile(
               vm: entry,

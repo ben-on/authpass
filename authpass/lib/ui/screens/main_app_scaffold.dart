@@ -162,36 +162,6 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
 
             Expanded(
               flex: 1,
-              child: ListView(
-                children: const  [
-                  ListTile(
-                    leading: Icon(Icons.line_style_rounded),
-                    title: Text("All Items"),
-                
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.star),
-                    title: Text("Favorites"),
-
-                  ),
-                  SizedBox(height: 10,),
-                  ListTile(title: Text("CATEGORIES") ,)
-                  ,
-                  ListTile(leading: Icon(Icons.login_outlined),
-                  title: Text("Logins"),),
-                  ListTile(leading: Icon(Icons.perm_identity_outlined), title: Text("Identities")),
-                  SizedBox(height: 10,),
-
-                  ListTile(title: Text("TAGS"),),
-                  ListTile(leading: Icon(Icons.book), title: Text("Starter Kit") ,)
-
-
-
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 1,
               child: SizedBox(
                 width: 384,
                 child: Navigator(
@@ -241,7 +211,7 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
               ),
             ),
             Expanded(
-              flex: 3,
+              flex: 1,
               child: Navigator(
                 key: _navigatorKey,
                 onGenerateRoute: (settings) {

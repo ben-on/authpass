@@ -114,113 +114,23 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen>
     final loc = AppLocalizations.of(context);
     final analytics = context.watch<Analytics>();
     return Scaffold(
-      appBar: AppBar(
+      // appBar: AppBar(
         
-        automaticallyImplyLeading: false ,
+      //   automaticallyImplyLeading: false ,
         
-        title: Text(vm.label?.takeUnlessBlank() ?? loc.noTitle),
-        actions: <Widget>[
-          ...?!isDirty
-              ? null
-              : [
-                  IconButton(
-                    icon: const Icon(Icons.save),
-                    onPressed: saveCallback,
-                  ),
-                ],
-          AppBarMenu.createOverflowMenuButton(
-            context,
-            builder: (context) => [
-              if (entry.isInRecycleBin()) ...[
-                PopupMenuItem(
-                  value: () async {
-                    final e = entry;
-                    final result = await DialogUtils.showConfirmDialog(
-                      context: context,
-                      params: ConfirmDialogParams(
-                        content: loc.permanentlyDeleteEntryConfirm(
-                            e.label ?? CharConstants.empty),
-                      ),
-                    );
-                    if (!result) {
-                      analytics.events.trackPermanentlyDeleteEntryCancel();
-                      return;
-                    }
-                    subscriptions.cancelSubscriptions();
-                    final scaffoldManager = ScaffoldMessenger.of(context);
-                    Navigator.of(context).pop();
-                    entry.file.deletePermanently(entry);
-                    analytics.events.trackPermanentlyDeleteEntry();
-                    scaffoldManager.showSnackBar(SnackBar(
-                        content: Text(loc.permanentlyDeletedEntrySnackBar)));
-                  },
-                  child: ListTile(
-                    leading: const Icon(Icons.delete_forever),
-                    title: Text(loc.deletePermanentlyAction),
-                  ),
-                ),
-                PopupMenuItem(
-                  value: () async {
-                    final previousParent = entry.previousParentGroup
-                        .get()
-                        ?.let((that) => entry.file.findGroupByUuid(that));
-                    final entryDetails = entryDetailsKey.currentState;
-                    if (entryDetails == null) {
-                      return;
-                    }
-                    await entryDetails._showMoveToGroup(
-                      loc,
-                      vm.entry,
-                      toGroup: previousParent == null ||
-                              previousParent.isInRecycleBin() ||
-                              previousParent == entry.file.recycleBin
-                          ? null
-                          : previousParent,
-                    );
-                  },
-                  child: ListTile(
-                    leading: const Icon(Icons.restore_from_trash),
-                    title: Text(loc.restoreFromRecycleBinAction),
-                  ),
-                ),
-              ] else ...[
-                PopupMenuItem(
-                  value: () {
-                    final oldGroup = entry.parent;
-                    entry.file.deleteEntry(entry);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(loc.deletedEntry),
-                      action: SnackBarAction(
-                          label: loc.undoButtonLabel,
-                          onPressed: () {
-                            entry.file.move(entry, oldGroup!);
-                          }),
-                    ));
-                  },
-                  child: ListTile(
-                    leading: const Icon(Icons.delete),
-                    title: Text(loc.deleteAction),
-                  ),
-                ),
-              ],
-              ...?!env.isDebug
-                  ? null
-                  : [
-                      PopupMenuItem(
-                        value: () {
-                          Clipboard.setData(ClipboardData(
-                              text: entry.toXml().toXmlString(pretty: true)));
-                        },
-                        child: ListTile(
-                          leading: const Icon(Icons.bug_report),
-                          title: Text(nonNls('Debug: Copy XML')),
-                        ),
-                      ),
-                    ]
-            ],
-          )
-        ],
-      ),
+      //   title: Text(vm.label?.takeUnlessBlank() ?? loc.noTitle),
+      //   actions: <Widget>[
+      //     ...?!isDirty
+      //         ? null
+      //         : [
+      //             IconButton(
+      //               icon: const Icon(Icons.save),
+      //               onPressed: saveCallback,
+      //             ),
+      //           ],
+          
+      //   ],
+      // ),
     
       body: WillPopScope(
         onWillPop: () async {
@@ -347,9 +257,11 @@ class EntryDetails extends StatefulWidget {
 
 class _EntryDetailsState extends State<EntryDetails>
     with StreamSubscriberMixin {
+
   List<Tuple3<GlobalKey<_EntryFieldState>, KdbxKey, CommonField?>>? _fieldKeys;
 
   IntentActionRegistration? _shortcutRegistration;
+  
 
   @override
   void dispose() {
@@ -518,6 +430,11 @@ class _EntryDetailsState extends State<EntryDetails>
 
   @override
   Widget build(BuildContext context) {
+    final entryDetailsKey = GlobalKey<_EntryDetailsState>();
+    final analytics = Provider.of<Analytics>(context, listen: false);
+    final env = Provider.of<Env>(context);
+
+
     final commonFields = Provider.of<CommonFields>(context);
     final kdbxBloc = context.watch<KdbxBloc>();
     final vm = widget.entry;
@@ -542,332 +459,455 @@ class _EntryDetailsState extends State<EntryDetails>
                       bottom: BorderSide(
                           color: Color.fromRGBO(0, 0, 0, .15), width: 1.0)),
                 ),
-                child: Stack(
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment : MainAxisAlignment.spaceBetween,
                   children: [
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
+                    
+                       GestureDetector(
                           onTap: () {
                             
                           },
-                          child: CustomButton())),
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: CustomIconButton())
+                          child: CustomButton()),
+                    
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                     CustomIconButton(),
+                     SizedBox(width: 30),
+
+                            AppBarMenu.createOverflowMenuButton(
+            context,
+            builder: (context) => [
+              if (entry.isInRecycleBin()) ...[
+                PopupMenuItem(
+                  value: () async {
+                    final e = entry;
+                    final result = await DialogUtils.showConfirmDialog(
+                      context: context,
+                      params: ConfirmDialogParams(
+                            content: loc.permanentlyDeleteEntryConfirm(
+                                e.label ?? CharConstants.empty),
+                      ),
+                    );
+                    if (!result) {
+                      analytics.events.trackPermanentlyDeleteEntryCancel();
+                      return;
+                    }
+                    subscriptions.cancelSubscriptions();
+                    final scaffoldManager = ScaffoldMessenger.of(context);
+                    Navigator.of(context).pop();
+                    entry.file.deletePermanently(entry);
+                    analytics.events.trackPermanentlyDeleteEntry();
+                    scaffoldManager.showSnackBar(SnackBar(
+                            content: Text(loc.permanentlyDeletedEntrySnackBar)));
+                  },
+                  child: ListTile(
+                    leading: const Icon(Icons.delete_forever),
+                    title: Text(loc.deletePermanentlyAction),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: () async {
+                    final previousParent = entry.previousParentGroup
+                            .get()
+                            ?.let((that) => entry.file.findGroupByUuid(that));
+                    final entryDetails = entryDetailsKey.currentState;
+                    if (entryDetails == null) {
+                      return;
+                    }
+                    await entryDetails._showMoveToGroup(
+                      loc,
+                      vm.entry,
+                      toGroup: previousParent == null ||
+                                  previousParent.isInRecycleBin() ||
+                                  previousParent == entry.file.recycleBin
+                              ? null
+                              : previousParent,
+                    );
+                  },
+                  child: ListTile(
+                    leading: const Icon(Icons.restore_from_trash),
+                    title: Text(loc.restoreFromRecycleBinAction),
+                  ),
+                ),
+              ] else ...[
+                PopupMenuItem(
+                  value: () {
+                    final oldGroup = entry.parent;
+                    entry.file.deleteEntry(entry);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(loc.deletedEntry),
+                      action: SnackBarAction(
+                              label: loc.undoButtonLabel,
+                              onPressed: () {
+                                entry.file.move(entry, oldGroup!);
+                              }),
+                    ));
+                  },
+                  child: ListTile(
+                    leading: const Icon(Icons.delete),
+                    title: Text(loc.deleteAction),
+                  ),
+                ),
+              ],
+              ...?!env.isDebug
+                  ? null
+                  : [
+                      PopupMenuItem(
+                            value: () {
+                              Clipboard.setData(ClipboardData(
+                                  text: entry.toXml().toXmlString(pretty: true)));
+                            },
+                            child: ListTile(
+                              leading: const Icon(Icons.bug_report),
+                              title: Text(nonNls('Debug: Copy XML')),
+                            ),
+                      ),
+                    ]
+            ],
+          ),
+          
+                          ],
+                        )
                   ],
                 ),
               ),
-              const SizedBox(height: 70),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              const SizedBox(height: 40),
+              // Row(
+              //   crossAxisAlignment: CrossAxisAlignment.center,
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: <Widget>[
+              //     Column(
+              //       crossAxisAlignment: CrossAxisAlignment.end,
+              //       children: [
+              //        
+              //         // const SizedBox(
+              //         //     height: 20,
+              //         //     child: Text(
+              //         //       'username',
+              //         //       style: TextStyle(color: Colors.black),
+              //         //     )),
+              //         // const SizedBox(
+              //         //   height: 20,
+              //         // ),
+              //         // const SizedBox(
+              //         //     height: 20,
+              //         //     child: Text(
+              //         //       'password',
+              //         //       style: TextStyle(color: Colors.black),
+              //         //     )),
+              //         // SizedBox(
+              //         //   height: 20,
+              //         // ),
+              //         // Container(
+              //         //     height: 20,
+              //         //     child: Text(
+              //         //       'Strength',
+              //         //       style: TextStyle(color: Colors.black),
+              //         //     )),
+              //         // SizedBox(
+              //         //   height: 20,
+              //         // ),
+              //         // SizedBox(
+              //         //     height: 30,
+              //         //     child: Text(
+              //         //       'Website',
+              //         //       style: TextStyle(color: Colors.black),
+              //         //     )),
+              //         // SizedBox(
+              //         //   height: 20,
+              //         // ),
+              //         // SizedBox(
+              //         //     height: 40,
+              //         //     child: Text(
+              //         //       'Notes',
+              //         //       style: TextStyle(color: Colors.black),
+              //         //     )),
+              //         // SizedBox(
+              //         //   height: 20,
+              //         // ),
+              //         // SizedBox(
+              //         //     height: 30,
+              //         //     child: Text(
+              //         //       'tags',
+              //         //       style: TextStyle(color: Colors.black),
+              //         //     )),
+              //         // SizedBox(
+              //         //   height: 15,
+              //         // ),
+              //         // SizedBox(
+              //         //   height: 25,
+              //         // ),
+              //         // SizedBox(
+              //         //   height: 15,
+              //         // ),
+              //         // SizedBox(
+              //         //   height: 25,
+              //         // ),
+              //         // SizedBox(
+              //         //   height: 15,
+              //         // ),
+              //         // SizedBox(
+              //         //   height: 25,
+              //         // ),
+              //         // SizedBox(
+              //         //   height: 20,
+              //         // ),
+              //         // SizedBox(
+              //         //     height: 20,
+              //         //     child: Text(
+              //         //       'last modified',
+              //         //       style: TextStyle(color: Colors.black),
+              //         //     )),
+              //         // SizedBox(
+              //         //   height: 20,
+              //         // ),
+              //       ],
+              //     ),
+
+              //     // const SizedBox(width: 16),
+              //     // EntryIcon(
+              //     //   vm: vm,
+              //     //   size: 64,
+              //     //   fallback: (context) => IconSelectorFormField(
+              //     //     initialValue: SelectedIcon.fromObject(entry),
+              //     //     onSaved: (icon) {
+              //     //       // TODO is it possible for icon to be null here?!
+              //     //       icon?.when(predefined: (predefined) {
+              //     //         entry.customIcon = null;
+              //     //         entry.icon.set(predefined);
+              //     //       }, custom: (custom) {
+              //     //         entry.customIcon = custom;
+              //     //       });
+              //     //     },
+              //     //     kdbxFile: entry.file,
+              //     //   ),
+              //     // ),
+              //     const SizedBox(width: 20),
+              //     Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Container(
+              //           height: 90,
+              //           child: Column(
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               SizedBox(
+              //                 height: 20,
+              //               ),
+              //               Text(
+              //                 entry.file.body.meta.databaseName.get()!,
+              //                 style: TextStyle(
+              //                     fontSize: 19.5,
+              //                     fontWeight: FontWeight.w600,
+              //                     color: Colors.black),
+              //               ),
+              //               Icon(
+              //                 Icons.star,
+              //                 color: Colors.black,
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //         SizedBox(
+              //           height: 20,
+              //           child: Text(
+              //             vm.label != null ? vm.label! : "No name",
+              //             style: TextStyle(color: Colors.black),
+              //           ),
+              //         ),
+              //         SizedBox(
+              //           height: 20,
+              //         ),
+              //         SizedBox(
+              //             height: 20,
+              //             child: Text(
+              //               '******',
+              //               style: TextStyle(color: Colors.black),
+              //             )),
+              //         SizedBox(
+              //           height: 20,
+              //         ),
+              //         SizedBox(
+              //           height: 20,
+              //           child: PercentageIndicator2(percent: 70),
+              //         ),
+              //         SizedBox(
+              //           height: 20,
+              //         ),
+              //         SizedBox(
+              //           height: 30,
+              //           child: Text(
+              //             vm.website != null ? vm.website! : "No website",
+              //             style: TextStyle(color: Colors.black),
+              //           ),
+              //         ),
+              //         SizedBox(
+              //           height: 20,
+              //         ),
+              //         SizedBox(
+              //           height: 40,
+              //           child: Text(
+              //             'You can use this login to sign in to your account on ' +
+              //                 (vm.website != null
+              //                     ? vm.website! + "."
+              //                     : "your account."),
+              //             style: TextStyle(color: Colors.black),
+              //           ),
+              //         ),
+              //         SizedBox(
+              //           height: 20,
+              //         ),
+              //         SizedBox(
+              //           height: 30,
+              //           child: Container(
+              //             decoration: BoxDecoration(
+              //               borderRadius: BorderRadius.circular(5),
+              //               border: Border.all(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0 )
+
+              //             ),
+              //             padding: EdgeInsets.all(3),
+              //             child: Text('starter kit',
+              //                 style: TextStyle(color: Colors.black)),
+              //           ),
+              //         ),
+              //         SizedBox(
+              //           height: 15,
+              //         ),
+              //         SizedBox(
+              //           height: 25,
+              //           child: ElevatedButton(
+              //               onPressed: () {},
+              //               style: ButtonStyle(
+              //                 backgroundColor:
+              //                     MaterialStatePropertyAll<Color>(Colors.white),
+              //               ),
+              //               child: Text(
+              //                 "Show Web Form Details",
+              //                 style: TextStyle(color: Colors.black),
+              //               )),
+              //         ),
+              //         SizedBox(
+              //           height: 15,
+              //         ),
+              //         SizedBox(
+              //           height: 25,
+              //           child: ElevatedButton(
+              //               onPressed: () {},
+              //               style: ButtonStyle(
+              //                 backgroundColor:
+              //                     MaterialStatePropertyAll<Color>(Colors.white),
+              //               ),
+              //               child: Text(
+              //                 "View Sharing History",
+              //                 style: TextStyle(color: Colors.black),
+              //               )),
+              //         ),
+              //         SizedBox(
+              //           height: 15,
+              //         ),
+              //         SizedBox(
+              //           height: 25,
+              //           child: ElevatedButton(
+              //               onPressed: () {},
+              //               style: ButtonStyle(
+              //                 backgroundColor:
+              //                     MaterialStatePropertyAll<Color>(Colors.white),
+              //               ),
+              //               child: Text(
+              //                 "View Item History",
+              //                 style: TextStyle(color: Colors.black),
+              //               )),
+              //         ),
+              //         SizedBox(
+              //           height: 20,
+              //         ),
+              //         SizedBox(
+              //             height: 20,
+              //             child: Text(
+              //               formatUtils.formatDateFull(
+              //                   vm.entry.times.lastModificationTime.get()!),
+              //               style: TextStyle(color: Colors.black),
+              //             )),
+              //         SizedBox(
+              //           height: 20,
+              //         ),
+              //       ],
+              //     ),
+
+              //     //Deprecated view entry detail 
+              //     // Expanded(
+              //     //   child: Column(
+              //     //     mainAxisSize: MainAxisSize.min,
+              //     //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     //     children: <Widget>[
+              //     //       const SizedBox(height: 16),
+              //     //       EntryMetaInfo(
+              //     //         label: loc.entryInfoFile,
+              //     //         value: entry.file.body.meta.databaseName.get(),
+              //     //       ),
+              //     //       EntryMetaInfo(
+              //     //         label: loc.entryInfoGroup,
+              //     //         value: vm.groupNames.join(' » '), // NON-NLS
+              //     //         onTap: () async {
+              //     //           await _showMoveToGroup(loc, vm.entry);
+              //     //         },
+              //     //       ),
+              //     //       EntryMetaInfo(
+              //     //         label: loc.entryInfoLastModified,
+              //     //         value: formatUtils.formatDateFull(
+              //     //             vm.entry.times.lastModificationTime.get()!),
+              //     //       ),
+              //     //       const SizedBox(height: 16),
+              //     //     ],
+              //     //   ),
+              //     // ),
+              //   ],
+              // ),
+               Row(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        height: 90,
-                        child: EntryIcon(
-                          vm: vm,
-                          size: 64,
-                          fallback: (context) => IconSelectorFormField(
-                            initialValue: SelectedIcon.fromObject(entry),
-                            onSaved: (icon) {
-                              icon?.when(predefined: (predefined) {
-                                entry.customIcon = null;
-                                entry.icon.set(predefined);
-                              }, custom: (custom) {
-                                entry.customIcon = custom;
-                              });
-                            },
-                            kdbxFile: entry.file,
+
+                 children: [
+                   SizedBox(
+                            height: 90,
+                            width: 275,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: EntryIcon(
+                                vm: vm,
+                                size: 64,
+                                fallback: (context) => IconSelectorFormField(
+                                  initialValue: SelectedIcon.fromObject(entry),
+                                  onSaved: (icon) {
+                                    icon?.when(predefined: (predefined) {
+                                      entry.customIcon = null;
+                                      entry.icon.set(predefined);
+                                    }, custom: (custom) {
+                                      entry.customIcon = custom;
+                                    });
+                                  },
+                                  kdbxFile: entry.file,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(
-                          height: 20,
-                          child: Text(
-                            'username',
-                            style: TextStyle(color: Colors.black),
-                          )),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const SizedBox(
-                          height: 20,
-                          child: Text(
-                            'password',
-                            style: TextStyle(color: Colors.black),
-                          )),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                          height: 20,
-                          child: Text(
-                            'Strength',
-                            style: TextStyle(color: Colors.black),
-                          )),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                          height: 30,
-                          child: Text(
-                            'Website',
-                            style: TextStyle(color: Colors.black),
-                          )),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                          height: 40,
-                          child: Text(
-                            'Notes',
-                            style: TextStyle(color: Colors.black),
-                          )),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                          height: 30,
-                          child: Text(
-                            'tags',
-                            style: TextStyle(color: Colors.black),
-                          )),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                          height: 20,
-                          child: Text(
-                            'last modified',
-                            style: TextStyle(color: Colors.black),
-                          )),
-                      SizedBox(
-                        height: 20,
-                      ),
-                    ],
-                  ),
+                          const SizedBox(width: 25),
 
-                  // const SizedBox(width: 16),
-                  // EntryIcon(
-                  //   vm: vm,
-                  //   size: 64,
-                  //   fallback: (context) => IconSelectorFormField(
-                  //     initialValue: SelectedIcon.fromObject(entry),
-                  //     onSaved: (icon) {
-                  //       // TODO is it possible for icon to be null here?!
-                  //       icon?.when(predefined: (predefined) {
-                  //         entry.customIcon = null;
-                  //         entry.icon.set(predefined);
-                  //       }, custom: (custom) {
-                  //         entry.customIcon = custom;
-                  //       });
-                  //     },
-                  //     kdbxFile: entry.file,
-                  //   ),
-                  // ),
-                  const SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 90,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Text(
-                              entry.file.body.meta.databaseName.get()!,
-                              style: TextStyle(
-                                  fontSize: 19.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black),
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.black,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                        child: Text(
-                          vm.label != null ? vm.label! : "No name",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                          height: 20,
-                          child: Text(
-                            '******',
-                            style: TextStyle(color: Colors.black),
-                          )),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        height: 20,
-                        child: PercentageIndicator2(percent: 70),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        height: 30,
-                        child: Text(
-                          vm.website != null ? vm.website! : "No website",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        height: 40,
-                        child: Text(
-                          'You can use this login to sign in to your account on ' +
-                              (vm.website != null
-                                  ? vm.website! + "."
-                                  : "your account."),
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        height: 30,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0 )
+                           Expanded(
+                             child: Text(
+                                entry.file.body.meta.databaseName.get()!,
+                                style: TextStyle(
+                                    fontSize: 19.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black),
+                              ),
+                           ),
+                 ],
+               ),
 
-                          ),
-                          padding: EdgeInsets.all(3),
-                          child: Text('starter kit',
-                              style: TextStyle(color: Colors.black)),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      SizedBox(
-                        height: 25,
-                        child: ElevatedButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStatePropertyAll<Color>(Colors.white),
-                            ),
-                            child: Text(
-                              "Show Web Form Details",
-                              style: TextStyle(color: Colors.black),
-                            )),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      SizedBox(
-                        height: 25,
-                        child: ElevatedButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStatePropertyAll<Color>(Colors.white),
-                            ),
-                            child: Text(
-                              "View Sharing History",
-                              style: TextStyle(color: Colors.black),
-                            )),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      SizedBox(
-                        height: 25,
-                        child: ElevatedButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStatePropertyAll<Color>(Colors.white),
-                            ),
-                            child: Text(
-                              "View Item History",
-                              style: TextStyle(color: Colors.black),
-                            )),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                          height: 20,
-                          child: Text(
-                            formatUtils.formatDateFull(
-                                vm.entry.times.lastModificationTime.get()!),
-                            style: TextStyle(color: Colors.black),
-                          )),
-                      SizedBox(
-                        height: 20,
-                      ),
-                    ],
-                  ),
-
-                  //Deprecated view entry detail 
-                  // Expanded(
-                  //   child: Column(
-                  //     mainAxisSize: MainAxisSize.min,
-                  //     crossAxisAlignment: CrossAxisAlignment.start,
-                  //     children: <Widget>[
-                  //       const SizedBox(height: 16),
-                  //       EntryMetaInfo(
-                  //         label: loc.entryInfoFile,
-                  //         value: entry.file.body.meta.databaseName.get(),
-                  //       ),
-                  //       EntryMetaInfo(
-                  //         label: loc.entryInfoGroup,
-                  //         value: vm.groupNames.join(' » '), // NON-NLS
-                  //         onTap: () async {
-                  //           await _showMoveToGroup(loc, vm.entry);
-                  //         },
-                  //       ),
-                  //       EntryMetaInfo(
-                  //         label: loc.entryInfoLastModified,
-                  //         value: formatUtils.formatDateFull(
-                  //             vm.entry.times.lastModificationTime.get()!),
-                  //       ),
-                  //       const SizedBox(height: 16),
-                  //     ],
-                  //   ),
-                  // ),
-                ],
-              ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 7),
               ..._fieldKeys!
                   .map(
                     (f) => EntryField(
@@ -2009,7 +2049,7 @@ class _OtpEntryFieldState extends _EntryFieldState {
     ]).toList();
   }
 }
-
+// Task-3
 class ObscuredEntryFieldEditor extends StatelessWidget {
   const ObscuredEntryFieldEditor({
     Key? key,
@@ -2035,25 +2075,30 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
       children: [
         InputDecorator(
           decoration: InputDecoration(
-            prefixIcon:
-                commonField?.icon == null ? null : Icon(commonField!.icon),
-            labelText: commonField?.displayName ?? fieldKey.key,
+            border: InputBorder.none,
+            prefixIcon: SizedBox(
+            width: 250,
+            child: Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  "${commonField?.displayName ?? fieldKey.key}",
+                )))
+                ,
             filled: true,
+            fillColor:Colors.white,
             labelStyle: TextStyle(color: color.withOpacity(0.2)),
           ),
-          child: Text(
-            nonNls('*') * 10,
-            style: TextStyle(color: color.withOpacity(0.2)),
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              nonNls('*') * 10,
+              style: TextStyle(color: color.withOpacity(0.2)),
+            ),
           ),
         ),
         Positioned.fill(
           child: ClipRect(
-            child: BackdropFilter(
-              filter: ui.ImageFilter.blur(
-                sigmaX: 0.5,
-                sigmaY: 0.5,
-              ),
-              child: LinkButton(
+            child: LinkButton(
                 onPressed: onPressed,
                 child: Container(
                   alignment: Alignment.center,
@@ -2063,7 +2108,7 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
                     // bottom: 16,
                   ),
                   child: Text(
-                    loc.entryFieldProtected,
+                    "* " * 10,
                     style: TextStyle(
                       color:
                           theme.isDarkTheme ? Colors.white : theme.primaryColor,
@@ -2078,7 +2123,7 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
+            
           ),
         ),
         IconButton(
@@ -2117,47 +2162,78 @@ class StringEntryFieldEditor extends StatelessWidget {
     final commonFields = Provider.of<CommonFields>(context);
     final loc = AppLocalizations.of(context);
     final color = ThemeUtil.iconColor(Theme.of(context), null);
-    return Stack(alignment: Alignment.centerRight, children: [
-      TextFormField(
-        key: formFieldKey,
-        maxLines: null,
-        focusNode: focusNode,
-        decoration: InputDecoration(
-          filled: true,
-          prefixIcon:
-              commonField?.icon == null ? null : Icon(commonField!.icon),
-          labelText: commonField?.displayName ?? fieldKey.key,
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Row( children: [
+        SizedBox(
+            width: 250,
+            height: 50,
+            child: Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  "${commonField?.displayName ?? fieldKey.key}",
+                ))),
+        SizedBox(
+          width: 25,
         ),
-        keyboardType: commonField?.keyboardType,
-        autocorrect: commonField?.autocorrect ?? true,
-        enableSuggestions: commonField?.enableSuggestions ?? true,
-        textCapitalization:
-            commonField?.textCapitalization ?? TextCapitalization.sentences,
-        controller: controller,
-        onSaved: onSaved,
-      ),
-      ValueListenableBuilder<TextEditingValue>(
-        valueListenable: controller!,
-        builder: (context, value, child) {
-          if (fieldKey == commonFields.password.key &&
-              controller!.text.isEmpty) {
-            return IconButton(
-                tooltip: '${loc.menuItemGeneratePassword} (cmd+g)', // NON-NLS
-                icon: const Icon(Icons.refresh),
-                onPressed: delegate.generatePassword,
-                color: color);
-          }
-          if (fieldKey == commonFields.url.key && controller!.text.isNotEmpty) {
-            return IconButton(
-                tooltip: '${loc.actionOpenUrl} (shift+cmd+U)', // NON-NLS
-                icon: const Icon(Icons.open_in_new),
-                onPressed: delegate.openUrl,
-                color: color);
-          }
-          return const SizedBox();
-        },
-      ),
-    ]);
+        
+        Expanded(
+          child: SizedBox(
+            height: 50, 
+            child: TextFormField(
+              textAlignVertical: TextAlignVertical.bottom,
+              key: formFieldKey,
+              maxLines: null,
+              focusNode: focusNode,
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, fontFamily: "Segoe UI"),
+              
+              decoration: const InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white, width : 0.6, )
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color:Colors.black12, width: 0.6 )
+          
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                // prefixIcon:
+                //     commonField?.icon == null ? null : Icon(commonField!.icon),
+                // labelText: commonField?.displayName ?? fieldKey.key,
+              ),
+              keyboardType: commonField?.keyboardType,
+              autocorrect: commonField?.autocorrect ?? true,
+              enableSuggestions: commonField?.enableSuggestions ?? true,
+              textCapitalization:
+                  commonField?.textCapitalization ?? TextCapitalization.sentences,
+              controller: controller,
+              onSaved: onSaved,
+            ),
+          ),
+        ),
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: controller!,
+          builder: (context, value, child) {
+            if (fieldKey == commonFields.password.key &&
+                controller!.text.isEmpty) {
+              return IconButton(
+                  tooltip: '${loc.menuItemGeneratePassword} (cmd+g)', // NON-NLS
+                  icon: const Icon(Icons.refresh),
+                  onPressed: delegate.generatePassword,
+                  color: color);
+            }
+            if (fieldKey == commonFields.url.key && controller!.text.isNotEmpty) {
+              return IconButton(
+                  tooltip: '${loc.actionOpenUrl} (shift+cmd+U)', // NON-NLS
+                  icon: const Icon(Icons.open_in_new),
+                  onPressed: delegate.openUrl,
+                  color: color);
+            }
+            return const SizedBox();
+          },
+        ),
+      ]),
+    );
   }
 }
 
