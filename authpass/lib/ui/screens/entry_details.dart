@@ -1790,11 +1790,11 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
                 )))
                 ,
             filled: true,
-            fillColor:Colors.white,
+            // fillColor:Colors.white,
             labelStyle: TextStyle(color: color.withOpacity(0.2)),
           ),
           child: Align(
-            alignment: Alignment.center,
+            alignment: Alignment.centerLeft,
             child: Text(
               nonNls('*') * 10,
               style: TextStyle(color: color.withOpacity(0.2)),
@@ -1805,15 +1805,15 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
           child: ClipRect(
             child: LinkButton(
                 onPressed: onPressed,
-                child: Container(
-                  alignment: Alignment.center,
+                child: Container( width: 5,
+                  alignment: Alignment.centerRight,
                   padding: const EdgeInsets.only(
                     left: 24.0,
                     right: 24.0,
                     // bottom: 16,
                   ),
                   child: Text(
-                    "* " * 10,
+                    "* " * 0,
                     style: TextStyle(
                       color:
                           theme.isDarkTheme ? Colors.white : theme.primaryColor,
@@ -1901,7 +1901,7 @@ class StringEntryFieldEditor extends StatelessWidget {
           
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                // fillColor: Colors.white,
                 // prefixIcon:
                 //     commonField?.icon == null ? null : Icon(commonField!.icon),
                 // labelText: commonField?.displayName ?? fieldKey.key,
