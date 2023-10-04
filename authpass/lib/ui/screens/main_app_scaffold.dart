@@ -7,7 +7,9 @@ import 'package:authpass/theme.dart';
 import 'package:authpass/ui/screens/entry_details.dart';
 import 'package:authpass/ui/screens/password_list.dart';
 import 'package:authpass/ui/widgets/keyboard_handler.dart';
+import 'package:authpass/ui/widgets/notification_icon.dart';
 import 'package:authpass/ui/widgets/primary_button.dart';
+import 'package:authpass/ui/widgets/profile_name.dart';
 import 'package:authpass/ui/widgets/utils/back_button_navigator_delegate.dart';
 import 'package:authpass/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -121,97 +123,102 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    return Padding(
-      padding:  EdgeInsets.all(width * 0.001),
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: width * 0.05,
-          elevation: width * 0.002,
-          backgroundColor: Colors.white,
-          leading: Image.asset(AssetConstants.logoIcon),
-          centerTitle: true,
-          title: Center(
-              child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                AssetConstants.logoIcon,
-                width: 30,
-                height: 30,
-              ),
-              SizedBox(width: width * 0.005),
-              const Text(
-                'Personal',
-                style: TextStyle(
-                    fontFamily: "Segoe UI",
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600),
-              ),
-              GestureDetector(
-                  onTap: () {},
-                  child: const Icon(Icons.keyboard_arrow_down_outlined))
-            ],
-          )),
-          actions: [
-            Icon(Icons.notifications_none_sharp),
-            VerticalDivider()
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: width * 0.04,
+        elevation: width * 0.002,
+        leading: Image.asset(AssetConstants.logoIcon),
+        centerTitle: true,
+        title: Center(
+            child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              AssetConstants.logoIcon,
+              width: 30,
+              height: 30,
+            ),
+            SizedBox(width: width * 0.005),
+            const Text(
+              'Personal',
+              style: TextStyle(
+                  fontFamily: "Segoe UI",
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600),
+            ),
+            GestureDetector(
+                onTap: () {},
+                child: const Icon(Icons.keyboard_arrow_down_outlined))
           ],
-        ),
-        body: Row(
-          children: <Widget>[
-
-            Expanded(
-              flex: 1,
-              child: SizedBox(
-                width: 384,
-                child: Navigator(
-                  onGenerateRoute: (settings) {
-                    assert(settings.name == Navigator.defaultRouteName);
-                    return MaterialPageRoute<void>(
-                      settings: settings,
-                      builder: (context) => PasswordList(
-                        selectedEntry: _selectedEntry,
-                        onEntrySelected: (entry, type) {
-                          if (_selectedEntry != entry) {
-                            final Future<dynamic> push;
-                            if (type == EntrySelectionType.passiveHighlight) {
-                              push =
-                                  _navigatorKey.currentState!.pushAndRemoveUntil(
-                                FocusWorkaroundPageRoute<void>(
-                                    focusNode: WidgetsBinding
-                                        .instance.focusManager.primaryFocus,
-                                    settings: const RouteSettings(name: '/entry'),
-                                    builder: (context) => EntryDetailsScreen(
-                                          entry: entry,
-                                        )),
-                                (route) => route.isFirst,
-                              );
-                            } else {
-                              push =
-                                  _navigatorKey.currentState!.pushAndRemoveUntil(
-                                EntryDetailsScreen.route(entry: entry),
-                                (route) => route.isFirst,
-                              );
-                            }
-                            push.then((dynamic value) {
-                              _logger.finer('entry route was popped.');
-                              if (entry == _selectedEntry && mounted) {
-                                setState(() => _selectedEntry = null);
-                              }
-                            });
-                            setState(() {
-                              _selectedEntry = entry;
-                            });
+        )),
+        actions: [
+          const Align(
+                    alignment: Alignment.centerRight,
+                    child: NotificationIcon(
+                      new_notifications: 0,
+                    ),),
+          VerticalDivider(),
+          ProfileName(name: "Tesfaye",)
+        ],
+      ),
+      body: Row(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: SizedBox(
+              width: 384,
+              child: Navigator(
+                onGenerateRoute: (settings) {
+                  assert(settings.name == Navigator.defaultRouteName);
+                  return MaterialPageRoute<void>(
+                    settings: settings,
+                    builder: (context) => PasswordList(
+                      selectedEntry: _selectedEntry,
+                      onEntrySelected: (entry, type) {
+                        if (_selectedEntry != entry) {
+                          final Future<dynamic> push;
+                          if (type == EntrySelectionType.passiveHighlight) {
+                            push =
+                                _navigatorKey.currentState!.pushAndRemoveUntil(
+                              FocusWorkaroundPageRoute<void>(
+                                  focusNode: WidgetsBinding
+                                      .instance.focusManager.primaryFocus,
+                                  settings: const RouteSettings(name: '/entry'),
+                                  builder: (context) => EntryDetailsScreen(
+                                        entry: entry,
+                                      )),
+                              (route) => route.isFirst,
+                            );
+                          } else {
+                            push =
+                                _navigatorKey.currentState!.pushAndRemoveUntil(
+                              EntryDetailsScreen.route(entry: entry),
+                              (route) => route.isFirst,
+                            );
                           }
-                        },
-                      ),
-                    );
-                  },
-                ),
+                          push.then((dynamic value) {
+                            _logger.finer('entry route was popped.');
+                            if (entry == _selectedEntry && mounted) {
+                              setState(() => _selectedEntry = null);
+                            }
+                          });
+                          setState(() {
+                            _selectedEntry = entry;
+                          });
+                        }
+                      },
+                    ),
+                  );
+                },
               ),
             ),
-            Expanded(
-              flex: 1,
+          ),
+          Expanded(
+            flex: 2,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(left: BorderSide(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0), top: BorderSide(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0))
+              ),
               child: Navigator(
                 key: _navigatorKey,
                 onGenerateRoute: (settings) {
@@ -223,8 +230,8 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
                 },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

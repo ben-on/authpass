@@ -443,574 +443,279 @@ class _EntryDetailsState extends State<EntryDetails>
     final theme = Theme.of(context);
     final loc = AppLocalizations.of(context);
 
-    return Container(
-      color: const Color.fromRGBO(255, 255, 255, 1),
-      child: SingleChildScrollView(
-        child: SafeArea(
-          top: false,
-          left: false,
-          child: Column(
-            children: <Widget>[
-              Container(
-                height: 49.6,
-                decoration: const BoxDecoration(
-                  color: const Color.fromRGBO(255, 255, 255, 1),
-                  border: Border(
-                      bottom: BorderSide(
-                          color: Color.fromRGBO(0, 0, 0, .15), width: 1.0)),
+    return SingleChildScrollView(
+      child: SafeArea(
+        top: false,
+        left: false,
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.only(left: 16),
+              height: 50.5,
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0),
+                ), 
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment : MainAxisAlignment.spaceBetween,
-                  children: [
-                    
-                       GestureDetector(
-                          onTap: () {
-                            
-                          },
-                          child: CustomButton()),
-                    
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                     CustomIconButton(),
-                     SizedBox(width: 30),
-
-                            AppBarMenu.createOverflowMenuButton(
-            context,
-            builder: (context) => [
-              if (entry.isInRecycleBin()) ...[
-                PopupMenuItem(
-                  value: () async {
-                    final e = entry;
-                    final result = await DialogUtils.showConfirmDialog(
-                      context: context,
-                      params: ConfirmDialogParams(
-                            content: loc.permanentlyDeleteEntryConfirm(
-                                e.label ?? CharConstants.empty),
-                      ),
-                    );
-                    if (!result) {
-                      analytics.events.trackPermanentlyDeleteEntryCancel();
-                      return;
-                    }
-                    subscriptions.cancelSubscriptions();
-                    final scaffoldManager = ScaffoldMessenger.of(context);
-                    Navigator.of(context).pop();
-                    entry.file.deletePermanently(entry);
-                    analytics.events.trackPermanentlyDeleteEntry();
-                    scaffoldManager.showSnackBar(SnackBar(
-                            content: Text(loc.permanentlyDeletedEntrySnackBar)));
-                  },
-                  child: ListTile(
-                    leading: const Icon(Icons.delete_forever),
-                    title: Text(loc.deletePermanentlyAction),
-                  ),
-                ),
-                PopupMenuItem(
-                  value: () async {
-                    final previousParent = entry.previousParentGroup
-                            .get()
-                            ?.let((that) => entry.file.findGroupByUuid(that));
-                    final entryDetails = entryDetailsKey.currentState;
-                    if (entryDetails == null) {
-                      return;
-                    }
-                    await entryDetails._showMoveToGroup(
-                      loc,
-                      vm.entry,
-                      toGroup: previousParent == null ||
-                                  previousParent.isInRecycleBin() ||
-                                  previousParent == entry.file.recycleBin
-                              ? null
-                              : previousParent,
-                    );
-                  },
-                  child: ListTile(
-                    leading: const Icon(Icons.restore_from_trash),
-                    title: Text(loc.restoreFromRecycleBinAction),
-                  ),
-                ),
-              ] else ...[
-                PopupMenuItem(
-                  value: () {
-                    final oldGroup = entry.parent;
-                    entry.file.deleteEntry(entry);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(loc.deletedEntry),
-                      action: SnackBarAction(
-                              label: loc.undoButtonLabel,
-                              onPressed: () {
-                                entry.file.move(entry, oldGroup!);
-                              }),
-                    ));
-                  },
-                  child: ListTile(
-                    leading: const Icon(Icons.delete),
-                    title: Text(loc.deleteAction),
-                  ),
-                ),
-              ],
-              ...?!env.isDebug
-                  ? null
-                  : [
-                      PopupMenuItem(
-                            value: () {
-                              Clipboard.setData(ClipboardData(
-                                  text: entry.toXml().toXmlString(pretty: true)));
-                            },
-                            child: ListTile(
-                              leading: const Icon(Icons.bug_report),
-                              title: Text(nonNls('Debug: Copy XML')),
-                            ),
-                      ),
-                    ]
-            ],
-          ),
-          
-                          ],
-                        )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40),
-              // Row(
-              //   crossAxisAlignment: CrossAxisAlignment.center,
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: <Widget>[
-              //     Column(
-              //       crossAxisAlignment: CrossAxisAlignment.end,
-              //       children: [
-              //        
-              //         // const SizedBox(
-              //         //     height: 20,
-              //         //     child: Text(
-              //         //       'username',
-              //         //       style: TextStyle(color: Colors.black),
-              //         //     )),
-              //         // const SizedBox(
-              //         //   height: 20,
-              //         // ),
-              //         // const SizedBox(
-              //         //     height: 20,
-              //         //     child: Text(
-              //         //       'password',
-              //         //       style: TextStyle(color: Colors.black),
-              //         //     )),
-              //         // SizedBox(
-              //         //   height: 20,
-              //         // ),
-              //         // Container(
-              //         //     height: 20,
-              //         //     child: Text(
-              //         //       'Strength',
-              //         //       style: TextStyle(color: Colors.black),
-              //         //     )),
-              //         // SizedBox(
-              //         //   height: 20,
-              //         // ),
-              //         // SizedBox(
-              //         //     height: 30,
-              //         //     child: Text(
-              //         //       'Website',
-              //         //       style: TextStyle(color: Colors.black),
-              //         //     )),
-              //         // SizedBox(
-              //         //   height: 20,
-              //         // ),
-              //         // SizedBox(
-              //         //     height: 40,
-              //         //     child: Text(
-              //         //       'Notes',
-              //         //       style: TextStyle(color: Colors.black),
-              //         //     )),
-              //         // SizedBox(
-              //         //   height: 20,
-              //         // ),
-              //         // SizedBox(
-              //         //     height: 30,
-              //         //     child: Text(
-              //         //       'tags',
-              //         //       style: TextStyle(color: Colors.black),
-              //         //     )),
-              //         // SizedBox(
-              //         //   height: 15,
-              //         // ),
-              //         // SizedBox(
-              //         //   height: 25,
-              //         // ),
-              //         // SizedBox(
-              //         //   height: 15,
-              //         // ),
-              //         // SizedBox(
-              //         //   height: 25,
-              //         // ),
-              //         // SizedBox(
-              //         //   height: 15,
-              //         // ),
-              //         // SizedBox(
-              //         //   height: 25,
-              //         // ),
-              //         // SizedBox(
-              //         //   height: 20,
-              //         // ),
-              //         // SizedBox(
-              //         //     height: 20,
-              //         //     child: Text(
-              //         //       'last modified',
-              //         //       style: TextStyle(color: Colors.black),
-              //         //     )),
-              //         // SizedBox(
-              //         //   height: 20,
-              //         // ),
-              //       ],
-              //     ),
-
-              //     // const SizedBox(width: 16),
-              //     // EntryIcon(
-              //     //   vm: vm,
-              //     //   size: 64,
-              //     //   fallback: (context) => IconSelectorFormField(
-              //     //     initialValue: SelectedIcon.fromObject(entry),
-              //     //     onSaved: (icon) {
-              //     //       // TODO is it possible for icon to be null here?!
-              //     //       icon?.when(predefined: (predefined) {
-              //     //         entry.customIcon = null;
-              //     //         entry.icon.set(predefined);
-              //     //       }, custom: (custom) {
-              //     //         entry.customIcon = custom;
-              //     //       });
-              //     //     },
-              //     //     kdbxFile: entry.file,
-              //     //   ),
-              //     // ),
-              //     const SizedBox(width: 20),
-              //     Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Container(
-              //           height: 90,
-              //           child: Column(
-              //             crossAxisAlignment: CrossAxisAlignment.start,
-              //             children: [
-              //               SizedBox(
-              //                 height: 20,
-              //               ),
-              //               Text(
-              //                 entry.file.body.meta.databaseName.get()!,
-              //                 style: TextStyle(
-              //                     fontSize: 19.5,
-              //                     fontWeight: FontWeight.w600,
-              //                     color: Colors.black),
-              //               ),
-              //               Icon(
-              //                 Icons.star,
-              //                 color: Colors.black,
-              //               ),
-              //             ],
-              //           ),
-              //         ),
-              //         SizedBox(
-              //           height: 20,
-              //           child: Text(
-              //             vm.label != null ? vm.label! : "No name",
-              //             style: TextStyle(color: Colors.black),
-              //           ),
-              //         ),
-              //         SizedBox(
-              //           height: 20,
-              //         ),
-              //         SizedBox(
-              //             height: 20,
-              //             child: Text(
-              //               '******',
-              //               style: TextStyle(color: Colors.black),
-              //             )),
-              //         SizedBox(
-              //           height: 20,
-              //         ),
-              //         SizedBox(
-              //           height: 20,
-              //           child: PercentageIndicator2(percent: 70),
-              //         ),
-              //         SizedBox(
-              //           height: 20,
-              //         ),
-              //         SizedBox(
-              //           height: 30,
-              //           child: Text(
-              //             vm.website != null ? vm.website! : "No website",
-              //             style: TextStyle(color: Colors.black),
-              //           ),
-              //         ),
-              //         SizedBox(
-              //           height: 20,
-              //         ),
-              //         SizedBox(
-              //           height: 40,
-              //           child: Text(
-              //             'You can use this login to sign in to your account on ' +
-              //                 (vm.website != null
-              //                     ? vm.website! + "."
-              //                     : "your account."),
-              //             style: TextStyle(color: Colors.black),
-              //           ),
-              //         ),
-              //         SizedBox(
-              //           height: 20,
-              //         ),
-              //         SizedBox(
-              //           height: 30,
-              //           child: Container(
-              //             decoration: BoxDecoration(
-              //               borderRadius: BorderRadius.circular(5),
-              //               border: Border.all(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0 )
-
-              //             ),
-              //             padding: EdgeInsets.all(3),
-              //             child: Text('starter kit',
-              //                 style: TextStyle(color: Colors.black)),
-              //           ),
-              //         ),
-              //         SizedBox(
-              //           height: 15,
-              //         ),
-              //         SizedBox(
-              //           height: 25,
-              //           child: ElevatedButton(
-              //               onPressed: () {},
-              //               style: ButtonStyle(
-              //                 backgroundColor:
-              //                     MaterialStatePropertyAll<Color>(Colors.white),
-              //               ),
-              //               child: Text(
-              //                 "Show Web Form Details",
-              //                 style: TextStyle(color: Colors.black),
-              //               )),
-              //         ),
-              //         SizedBox(
-              //           height: 15,
-              //         ),
-              //         SizedBox(
-              //           height: 25,
-              //           child: ElevatedButton(
-              //               onPressed: () {},
-              //               style: ButtonStyle(
-              //                 backgroundColor:
-              //                     MaterialStatePropertyAll<Color>(Colors.white),
-              //               ),
-              //               child: Text(
-              //                 "View Sharing History",
-              //                 style: TextStyle(color: Colors.black),
-              //               )),
-              //         ),
-              //         SizedBox(
-              //           height: 15,
-              //         ),
-              //         SizedBox(
-              //           height: 25,
-              //           child: ElevatedButton(
-              //               onPressed: () {},
-              //               style: ButtonStyle(
-              //                 backgroundColor:
-              //                     MaterialStatePropertyAll<Color>(Colors.white),
-              //               ),
-              //               child: Text(
-              //                 "View Item History",
-              //                 style: TextStyle(color: Colors.black),
-              //               )),
-              //         ),
-              //         SizedBox(
-              //           height: 20,
-              //         ),
-              //         SizedBox(
-              //             height: 20,
-              //             child: Text(
-              //               formatUtils.formatDateFull(
-              //                   vm.entry.times.lastModificationTime.get()!),
-              //               style: TextStyle(color: Colors.black),
-              //             )),
-              //         SizedBox(
-              //           height: 20,
-              //         ),
-              //       ],
-              //     ),
-
-              //     //Deprecated view entry detail 
-              //     // Expanded(
-              //     //   child: Column(
-              //     //     mainAxisSize: MainAxisSize.min,
-              //     //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     //     children: <Widget>[
-              //     //       const SizedBox(height: 16),
-              //     //       EntryMetaInfo(
-              //     //         label: loc.entryInfoFile,
-              //     //         value: entry.file.body.meta.databaseName.get(),
-              //     //       ),
-              //     //       EntryMetaInfo(
-              //     //         label: loc.entryInfoGroup,
-              //     //         value: vm.groupNames.join(' » '), // NON-NLS
-              //     //         onTap: () async {
-              //     //           await _showMoveToGroup(loc, vm.entry);
-              //     //         },
-              //     //       ),
-              //     //       EntryMetaInfo(
-              //     //         label: loc.entryInfoLastModified,
-              //     //         value: formatUtils.formatDateFull(
-              //     //             vm.entry.times.lastModificationTime.get()!),
-              //     //       ),
-              //     //       const SizedBox(height: 16),
-              //     //     ],
-              //     //   ),
-              //     // ),
-              //   ],
-              // ),
-               Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                 children: [
-                   SizedBox(
-                            height: 90,
-                            width: 275,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: EntryIcon(
-                                vm: vm,
-                                size: 64,
-                                fallback: (context) => IconSelectorFormField(
-                                  initialValue: SelectedIcon.fromObject(entry),
-                                  onSaved: (icon) {
-                                    icon?.when(predefined: (predefined) {
-                                      entry.customIcon = null;
-                                      entry.icon.set(predefined);
-                                    }, custom: (custom) {
-                                      entry.customIcon = custom;
-                                    });
-                                  },
-                                  kdbxFile: entry.file,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 25),
-
-                           Expanded(
-                             child: Text(
-                                entry.file.body.meta.databaseName.get()!,
-                                style: TextStyle(
-                                    fontSize: 19.5,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black),
-                              ),
-                           ),
-                 ],
-               ),
-
-              const SizedBox(height: 7),
-              ..._fieldKeys!
-                  .map(
-                    (f) => EntryField(
-                      fieldType: commonFields.isTotp(f.item2)
-                          ? FieldType.otp
-                          : FieldType.string,
-                      key: f.item1,
-                      entry: entry,
-                      fieldKey: f.item2,
-                      commonField: f.item3,
-                      onChangedMetadata: () => setState(() {
-                        _initFields(
-                            Provider.of<CommonFields>(context, listen: false));
-                      }),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment : MainAxisAlignment.spaceBetween,
+                children: [
+                  
+                     GestureDetector(
+                        onTap: () {
+                          
+                        },
+                        child: CustomButton()),
+                  
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                   CustomIconButton(),
+                   SizedBox(width: 30),
+        
+                          AppBarMenu.createOverflowMenuButton(
+          context,
+          builder: (context) => [
+            if (entry.isInRecycleBin()) ...[
+              PopupMenuItem(
+                value: () async {
+                  final e = entry;
+                  final result = await DialogUtils.showConfirmDialog(
+                    context: context,
+                    params: ConfirmDialogParams(
+                          content: loc.permanentlyDeleteEntryConfirm(
+                              e.label ?? CharConstants.empty),
                     ),
-                  )
-                  .expand((el) => [el, const SizedBox(height: 8)]),
-              AddFieldButton(
-                onAddField: (key) async {
-                  final cf = commonFields[key];
-                  if (cf == commonFields.otpAuth) {
-                    final secret = await _askForTotpSecret(context);
-                    if (secret == null) {
-                      return;
-                    }
-                    _logger.finer('Got otp auth: $secret');
-                    entry.setString(key,
-                        ProtectedValue.fromString(secret.toUri().toString()));
-                  } else {
-                    entry.setString(
-                        key,
-                        cf?.protect == true
-                            ? ProtectedValue.fromString(CharConstants.empty)
-                            : PlainValue(CharConstants.empty));
+                  );
+                  if (!result) {
+                    analytics.events.trackPermanentlyDeleteEntryCancel();
+                    return;
                   }
-                  Provider.of<Analytics>(context, listen: false)
-                      .events
-                      .trackAddField(key: key.key);
-                  _initFields(
-                      Provider.of<CommonFields>(context, listen: false));
-                  setState(() {});
+                  subscriptions.cancelSubscriptions();
+                  final scaffoldManager = ScaffoldMessenger.of(context);
+                  Navigator.of(context).pop();
+                  entry.file.deletePermanently(entry);
+                  analytics.events.trackPermanentlyDeleteEntry();
+                  scaffoldManager.showSnackBar(SnackBar(
+                          content: Text(loc.permanentlyDeletedEntrySnackBar)));
                 },
+                child: ListTile(
+                  leading: const Icon(Icons.delete_forever),
+                  title: Text(loc.deletePermanentlyAction),
+                ),
               ),
-              const Divider(),
-              ...entry.binaryEntries.map((e) {
-                final info = kdbxBloc.attachmentInfo(e.value);
-                return InkWell(
-                  onTap: () async {
-                    await showModalBottomSheet<void>(
-                        context: context,
-                        builder: (context) => AttachmentBottomSheet(
-                              entry: entry,
-                              attachment: e,
-                            ));
-                  },
-                  child: Container(
-                    constraints: const BoxConstraints(minWidth: 500),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 8,
+              PopupMenuItem(
+                value: () async {
+                  final previousParent = entry.previousParentGroup
+                          .get()
+                          ?.let((that) => entry.file.findGroupByUuid(that));
+                  final entryDetails = entryDetailsKey.currentState;
+                  if (entryDetails == null) {
+                    return;
+                  }
+                  await entryDetails._showMoveToGroup(
+                    loc,
+                    vm.entry,
+                    toGroup: previousParent == null ||
+                                previousParent.isInRecycleBin() ||
+                                previousParent == entry.file.recycleBin
+                            ? null
+                            : previousParent,
+                  );
+                },
+                child: ListTile(
+                  leading: const Icon(Icons.restore_from_trash),
+                  title: Text(loc.restoreFromRecycleBinAction),
+                ),
+              ),
+            ] else ...[
+              PopupMenuItem(
+                value: () {
+                  final oldGroup = entry.parent;
+                  entry.file.deleteEntry(entry);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(loc.deletedEntry),
+                    action: SnackBarAction(
+                            label: loc.undoButtonLabel,
+                            onPressed: () {
+                              entry.file.move(entry, oldGroup!);
+                            }),
+                  ));
+                },
+                child: ListTile(
+                  leading: const Icon(Icons.delete),
+                  title: Text(loc.deleteAction),
+                ),
+              ),
+            ],
+            ...?!env.isDebug
+                ? null
+                : [
+                    PopupMenuItem(
+                          value: () {
+                            Clipboard.setData(ClipboardData(
+                                text: entry.toXml().toXmlString(pretty: true)));
+                          },
+                          child: ListTile(
+                            leading: const Icon(Icons.bug_report),
+                            title: Text(nonNls('Debug: Copy XML')),
+                          ),
                     ),
-                    child: Row(
-                      children: <Widget>[
-                        info == null
-                            ? const Icon(Icons.attach_file)
-                            : const Icon(Icons.cloud),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Text(e.key.key,
-                                  style: theme.textTheme.titleMedium),
-                              const SizedBox(height: 2),
-                              info == null
-                                  ? Text(loc.sizeBytes(e.value.value.length),
-                                      style: theme.textTheme.bodySmall)
-                                  : Text(
-                                      loc.sizeBytesStoredAuthPassCloud(
-                                          info.size),
-                                      style: theme.textTheme.bodySmall),
-                            ],
+                  ]
+          ],
+        ),
+        
+                        ],
+                      )
+                ],
+              ),
+            ),
+            const SizedBox(height: 40),
+             Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+        
+               children: [
+                 SizedBox(
+                          height: 90,
+                          width: 275,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: EntryIcon(
+                              vm: vm,
+                              size: 64,
+                              fallback: (context) => IconSelectorFormField(
+                                initialValue: SelectedIcon.fromObject(entry),
+                                onSaved: (icon) {
+                                  icon?.when(predefined: (predefined) {
+                                    entry.customIcon = null;
+                                    entry.icon.set(predefined);
+                                  }, custom: (custom) {
+                                    entry.customIcon = custom;
+                                  });
+                                },
+                                kdbxFile: entry.file,
+                              ),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                        const SizedBox(width: 25),
+        
+                         Expanded(
+                           child: Text(
+                              entry.file.body.meta.databaseName.get()!,
+                              style: TextStyle(
+                                  fontSize: 19.5,
+                                  fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                         ),
+               ],
+             ),
+        
+            const SizedBox(height: 7),
+            ..._fieldKeys!
+                .map(
+                  (f) => EntryField(
+                    fieldType: commonFields.isTotp(f.item2)
+                        ? FieldType.otp
+                        : FieldType.string,
+                    key: f.item1,
+                    entry: entry,
+                    fieldKey: f.item2,
+                    commonField: f.item3,
+                    onChangedMetadata: () => setState(() {
+                      _initFields(
+                          Provider.of<CommonFields>(context, listen: false));
+                    }),
                   ),
-                );
-              }),
-              LinkButton(
-                icon: const Icon(Icons.attach_file),
-                onPressed: _attachFile,
-                child: Text(loc.entryAddAttachment),
-              ),
-              const SizedBox(height: 16),
-              PrimaryButton(
-                icon: const Icon(Icons.save),
-                onPressed: widget.onSavedPressed,
-                child: Text(loc.saveButtonLabel),
-              ),
-            ],
-          ),
+                )
+                .expand((el) => [el, const SizedBox(height: 8)]),
+            AddFieldButton(
+              onAddField: (key) async {
+                final cf = commonFields[key];
+                if (cf == commonFields.otpAuth) {
+                  final secret = await _askForTotpSecret(context);
+                  if (secret == null) {
+                    return;
+                  }
+                  _logger.finer('Got otp auth: $secret');
+                  entry.setString(key,
+                      ProtectedValue.fromString(secret.toUri().toString()));
+                } else {
+                  entry.setString(
+                      key,
+                      cf?.protect == true
+                          ? ProtectedValue.fromString(CharConstants.empty)
+                          : PlainValue(CharConstants.empty));
+                }
+                Provider.of<Analytics>(context, listen: false)
+                    .events
+                    .trackAddField(key: key.key);
+                _initFields(
+                    Provider.of<CommonFields>(context, listen: false));
+                setState(() {});
+              },
+            ),
+            // const Divider(),
+            ...entry.binaryEntries.map((e) {
+              final info = kdbxBloc.attachmentInfo(e.value);
+              return InkWell(
+                onTap: () async {
+                  await showModalBottomSheet<void>(
+                      context: context,
+                      builder: (context) => AttachmentBottomSheet(
+                            entry: entry,
+                            attachment: e,
+                          ));
+                },
+                child: Container(
+                  constraints: const BoxConstraints(minWidth: 500),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 8,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      info == null
+                          ? const Icon(Icons.attach_file)
+                          : const Icon(Icons.cloud),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(e.key.key,
+                                style: theme.textTheme.titleMedium),
+                            const SizedBox(height: 2),
+                            info == null
+                                ? Text(loc.sizeBytes(e.value.value.length),
+                                    style: theme.textTheme.bodySmall)
+                                : Text(
+                                    loc.sizeBytesStoredAuthPassCloud(
+                                        info.size),
+                                    style: theme.textTheme.bodySmall),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+            LinkButton(
+              icon: const Icon(Icons.attach_file),
+              onPressed: _attachFile,
+              child: Text(loc.entryAddAttachment),
+            ),
+            const SizedBox(height: 16),
+            PrimaryButton(
+              icon: const Icon(Icons.save),
+              onPressed: widget.onSavedPressed,
+              child: Text(loc.saveButtonLabel),
+            ),
+          ],
         ),
       ),
     );
