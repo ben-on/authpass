@@ -287,6 +287,40 @@ flutter:
     - family: AuthPassIcons
       fonts:
        - asset: assets/fonts/AuthPassIcons.ttf
+    - family: SegoeUI
+      fonts:
+        - asset: assets/fonts/Segoe_UI_400.ttf
+          weight: 400
+        - asset: assets/fonts/Segoe_UI_Black_900.ttf
+          weight: 900
+        - asset: assets/fonts/Segoe_UI_Black_Italic_900.ttf
+          weight: 900
+          style: italic
+        - asset: assets/fonts/Segoe_UI_Gras_700.ttf
+          weight: 700
+        - asset: assets/fonts/Segoe_UI_Gras_Italique_700.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Segoe_UI_Italique_400.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Segoe_UI_Light_300.ttf
+          weight: 300
+        - asset: assets/fonts/Segoe_UI_Light_Italic_300.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Segoe_UI_Semibold_600.ttf
+          weight: 600
+        - asset: assets/fonts/Segoe_UI_Semibold_Italic_600.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Segoe_UI_Semilight_350.ttf
+          weight: 400
+        - asset: assets/fonts/Segoe_UI_Semilight_Italic_350.ttf
+          weight: 400
+          style: italic
+
+        
 msix_config:
   display_name: AuthPass
   publisher_display_name: CodeUX.design

@@ -6,6 +6,7 @@ import 'package:authpass/cloud_storage/cloud_storage_provider.dart';
 import 'package:authpass/cloud_storage/cloud_storage_ui_auth.dart';
 import 'package:authpass/cloud_storage/cloud_storage_ui_authpass_cloud.dart';
 import 'package:authpass/env/_base.dart';
+import 'package:authpass/theme.dart';
 import 'package:authpass/ui/screens/create_file.dart';
 import 'package:authpass/ui/screens/select_file_screen.dart';
 import 'package:authpass/ui/widgets/link_button.dart';
@@ -98,7 +99,7 @@ class _CloudStorageSelectorState extends State<CloudStorageSelector> {
                         ),
                       ));
                     },
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add, color: AuthPassTheme.iconColor),
                   ),
                 ],
                 IconButton(

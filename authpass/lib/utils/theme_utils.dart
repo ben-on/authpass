@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ThemeUtil {
   static Color iconColor(ThemeData theme, Color? fileColor) {
-    return fileColor ?? (theme.isDarkTheme ? Colors.white54 : Colors.black45);
+    return fileColor ?? (theme.isDarkTheme ? Color.fromARGB(226, 216, 212, 212) : const Color.fromARGB(115, 214, 212, 212));
   }
 }
 

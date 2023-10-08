@@ -10,6 +10,7 @@ import 'package:authpass/bloc/authpass_cloud_bloc.dart';
 import 'package:authpass/bloc/kdbx/storage_exception.dart';
 import 'package:authpass/bloc/kdbx_bloc.dart';
 import 'package:authpass/env/_base.dart';
+import 'package:authpass/theme.dart';
 import 'package:authpass/ui/common_fields.dart';
 import 'package:authpass/ui/screens/app_bar_menu.dart';
 import 'package:authpass/ui/screens/barcodescan_screen.dart';
@@ -114,6 +115,7 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen>
     final loc = AppLocalizations.of(context);
     final analytics = context.watch<Analytics>();
     return Scaffold(
+      backgroundColor: AuthPassTheme.secondaryBackgroundColor,
       // appBar: AppBar(
         
       //   automaticallyImplyLeading: false ,
@@ -453,6 +455,7 @@ class _EntryDetailsState extends State<EntryDetails>
               padding: const EdgeInsets.only(left: 16),
               height: 50.5,
               decoration: BoxDecoration(
+                color: AuthPassTheme.primaryBackgoundColor,
                 border: Border(bottom: BorderSide(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0),
                 ), 
                 ),
@@ -466,7 +469,7 @@ class _EntryDetailsState extends State<EntryDetails>
                         children: [
                    SizedBox(width: 30),
                   PrimaryButton(
-                    icon: const Icon(Icons.save),
+                    icon: const Icon(Icons.save, ),
                     onPressed: widget.onSavedPressed,
                     child: Text(loc.saveButtonLabel),
                   ),
@@ -602,10 +605,7 @@ class _EntryDetailsState extends State<EntryDetails>
                          Expanded(
                            child: Text(
                               entry.file.body.meta.databaseName.get()!,
-                              style: TextStyle(
-                                  fontSize: 19.5,
-                                  fontWeight: FontWeight.w600,
-                                  ),
+                              style: AuthPassTheme.titleLarge,
                             ),
                          ),
                ],
@@ -628,7 +628,7 @@ class _EntryDetailsState extends State<EntryDetails>
                     }),
                   ),
                 )
-                .expand((el) => [el, const SizedBox(height: 8)]),
+                .expand((el) => [ el, const SizedBox(height: 0)]),
             AddFieldButton(
               onAddField: (key) async {
                 final cf = commonFields[key];
@@ -1239,7 +1239,7 @@ class _EntryFieldState extends State<EntryField>
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             const Icon(Icons.lock),
-            const SizedBox(height: 4),
+            
             Text(loc.swipeCopyField),
           ],
         ),
@@ -1768,67 +1768,90 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
     final theme = Theme.of(context);
     final loc = AppLocalizations.of(context);
 
-    return Stack(
-      alignment: Alignment.centerRight,
+    return Row(
       children: [
-        InputDecorator(
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            prefixIcon: SizedBox(
+        SizedBox(
             width: 250,
+            height: 25,
             child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  "${commonField?.displayName ?? fieldKey.key}",
-                )))
-                ,
-            filled: true,
-            // fillColor:Colors.white,
-            labelStyle: TextStyle(color: color.withOpacity(0.2)),
-          ),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              nonNls('*') * 10,
-              style: TextStyle(color: color.withOpacity(0.2)),
-            ),
-          ),
+                  style: AuthPassTheme.lableText,
+                  "${commonField?.displayName.toLowerCase() ?? fieldKey.key.toLowerCase()}",
+                ))),
+        SizedBox(
+          width: 25,
         ),
-        Positioned.fill(
-          child: ClipRect(
-            child: LinkButton(
-                onPressed: onPressed,
-                child: Container( width: 5,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(
-                    left: 24.0,
-                    right: 24.0,
-                    // bottom: 16,
-                  ),
-                  child: Text(
-                    "* " * 0,
-                    style: TextStyle(
-                      color:
-                          theme.isDarkTheme ? Colors.white : theme.primaryColor,
-                      shadows: [
-                        Shadow(
-                            color: theme.isDarkTheme
-                                ? Colors.black87
-                                : Colors.white,
-                            blurRadius: 5)
-                      ],
+        
+        Expanded(
+          child: Stack(
+            alignment: Alignment.centerRight,
+            children: [
+        SizedBox(
+          height:30,
+          child: InputDecorator(
+            textAlignVertical: TextAlignVertical.top,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      // prefixIcon: SizedBox(
+                      // width: 250,
+                      // child: Align(
+                      //     alignment: Alignment.centerRight,
+                      //     child: Text(
+                      //       "${commonField?.displayName ?? fieldKey.key}",
+                      //     )))
+                      //     ,
+                      
+                    ),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        nonNls('  * ') * 10,
+                        style: AuthPassTheme.entryFieldText,
+                        
+                      ),
                     ),
                   ),
+        ),
+              
+              Positioned.fill(
+                child: ClipRect(
+                  child: LinkButton(
+                      onPressed: onPressed,
+                      child: Container( width: 5,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(
+                          left: 24.0,
+                          right: 24.0,
+                          // bottom: 16,
+                        ),
+                        child: Text(
+                          "* " * 0,
+                          style: TextStyle(
+                            color:
+                                theme.isDarkTheme ? Colors.white : theme.primaryColor,
+                            shadows: [
+                              Shadow(
+                                  color: theme.isDarkTheme
+                                      ? Colors.black87
+                                      : Colors.white,
+                                  blurRadius: 5)
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  
                 ),
               ),
-            
+              IconButton(
+                icon: const Icon(FontAwesomeIcons.eye),
+                color: color,
+                tooltip: loc.entryFieldActionRevealField,
+                onPressed: onShowPressed,
+              ),
+            ],
           ),
-        ),
-        IconButton(
-          icon: const Icon(FontAwesomeIcons.eye),
-          color: color,
-          tooltip: loc.entryFieldActionRevealField,
-          onPressed: onShowPressed,
         ),
       ],
     );
@@ -1865,11 +1888,12 @@ class StringEntryFieldEditor extends StatelessWidget {
       child: Row( children: [
         SizedBox(
             width: 250,
-            height: 50,
+            height: 25,
             child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  "${commonField?.displayName ?? fieldKey.key}",
+                  "${commonField?.displayName .toLowerCase()?? fieldKey.key.toLowerCase()}",
+                  style: AuthPassTheme.lableText,
                 ))),
         SizedBox(
           width: 25,
@@ -1877,11 +1901,11 @@ class StringEntryFieldEditor extends StatelessWidget {
         
         Expanded(
           child: SizedBox(
-            height: 50, 
+            height: 30, 
             child: TextFormField(
-              textAlignVertical: TextAlignVertical.bottom,
+              maxLines: 1, 
+              textAlignVertical: TextAlignVertical.top,
               key: formFieldKey,
-              maxLines: null,
               focusNode: focusNode,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, fontFamily: "Segoe UI"),
               
@@ -1894,7 +1918,7 @@ class StringEntryFieldEditor extends StatelessWidget {
           
                 ),
                 filled: true,
-                // fillColor: Colors.white,
+                fillColor: Colors.transparent,
                 // prefixIcon:
                 //     commonField?.icon == null ? null : Icon(commonField!.icon),
                 // labelText: commonField?.displayName ?? fieldKey.key,

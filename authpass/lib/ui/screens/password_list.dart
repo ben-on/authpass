@@ -9,6 +9,7 @@ import 'package:authpass/bloc/kdbx/file_source_local.dart';
 import 'package:authpass/bloc/kdbx/file_source_ui.dart';
 import 'package:authpass/bloc/kdbx_bloc.dart';
 import 'package:authpass/env/_base.dart';
+import 'package:authpass/theme.dart';
 import 'package:authpass/ui/common_fields.dart';
 import 'package:authpass/ui/screens/app_bar_menu.dart';
 import 'package:authpass/ui/screens/cloud/cloud_auth.dart';
@@ -843,23 +844,21 @@ class _PasswordListContentState extends State<PasswordListContent>
 
     // Search Part
     return AppBar(
-      toolbarHeight: 49.6,
-      backgroundColor: Colors.transparent,
+      toolbarHeight: width * 0.04,
+      backgroundColor: AuthPassTheme.terinaryBackgroundColor,
       iconTheme: theme.primaryIconTheme,
       toolbarTextStyle: theme.primaryTextTheme.bodyMedium,
       titleTextStyle: theme.primaryTextTheme.titleSmall,
       // old deprecated value:
       // textTheme: theme.primaryTextTheme,
       // brightness: theme.primaryColorBrightness,
-      systemOverlayStyle: theme.brightness == Brightness.dark
-          ? SystemUiOverlayStyle.light
-          : SystemUiOverlayStyle.dark,
+      
       automaticallyImplyLeading: false,
 
       title: Theme(
         data: theme,
         child: SizedBox(
-          height: width * 0.02,
+          height: width * 0.025,
           child: TextField(
             textAlignVertical: TextAlignVertical.bottom,
             style: theme.textTheme.titleSmall,
@@ -873,11 +872,15 @@ class _PasswordListContentState extends State<PasswordListContent>
             },
             autofocus: true,
             decoration: InputDecoration(
+              filled: true,
+              fillColor: AuthPassTheme.primaryBackgoundColor ,
               hintText: loc.searchHint,
-              border: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                      color: Color.fromARGB(201, 158, 158, 158)),
-                  borderRadius: BorderRadius.circular(width * 0.01)),
+              enabledBorder: OutlineInputBorder(
+                  borderSide:  BorderSide(
+                      color: Colors.black45,
+                      width: width * 0.0001,
+                      ),
+                  borderRadius: BorderRadius.circular(width * 0.03)),
               focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                       color: const Color.fromARGB(219, 146, 193, 247),
@@ -1124,6 +1127,7 @@ class _PasswordListContentState extends State<PasswordListContent>
               },
               child: Scaffold(
                 appBar: _buildFilterAppBar(context),
+                backgroundColor: AuthPassTheme.secondaryBackgroundColor,
                 body: Row(
                   children: [
                     Expanded(

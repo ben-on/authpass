@@ -125,6 +125,7 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         toolbarHeight: width * 0.04,
         elevation: width * 0.002,
         leading: Padding(
@@ -144,11 +145,7 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
             SizedBox(width: width * 0.005),
             const Text(
               'Personal',
-              style: TextStyle(
-                  fontFamily: "Segoe UI",
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600),
-            ),
+              style: AuthPassTheme.titleLarge,),
             GestureDetector(
                 onTap: () {},
                 child: const Icon(Icons.keyboard_arrow_down_outlined))
@@ -167,7 +164,6 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
       body: Row(
         children: <Widget>[
           Expanded(
-            flex: 1,
             child: SizedBox(
               width: 384,
               child: Navigator(
@@ -217,7 +213,6 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
             ),
           ),
           Expanded(
-            flex: 2,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(left: BorderSide(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0), top: BorderSide(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0))

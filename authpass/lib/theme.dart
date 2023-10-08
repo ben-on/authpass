@@ -9,6 +9,33 @@ final _logger = Logger('theme');
 
 class AuthPassTheme {
   @NonNls
+  static const primaryBackgoundColor = Color.fromARGB(255, 255, 255, 255);
+  static const secondaryBackgroundColor = Color.fromARGB(218, 250, 250, 250);
+  static const terinaryBackgroundColor = Color.fromARGB(226, 246, 247, 251);
+  static const largeText = TextStyle(fontFamily: "SegoeUI", fontSize: 20);
+  static const iconColor = Colors.black54;
+  static const lableText = TextStyle(
+      fontFamily: "SegoeUI",
+      fontSize: 14.5,
+      color: Color.fromARGB(195, 35, 26, 26));
+  static const entryFieldText = TextStyle(
+      fontFamily: "SegoeUI",
+      fontSize: 14.5,
+      color: Color.fromARGB(195, 16, 14, 14));
+  static const titleLarge =  TextStyle(
+    color: Colors.black87,
+    fontFamily: "SegoeUI",
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+
+  );
+  static const titleMedium = TextStyle(
+    fontFamily: "SegoeUI",
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+  );
+
+  @NonNls
   static const monoFontFamily = 'JetBrainsMono';
 
 //  static const Color linkColor = Colors.blueAccent;
@@ -131,7 +158,7 @@ bool _isDarwinVersion({required int minimumMajor, required int minimumMinor}) {
 
 ThemeData createTheme() {
   return _customize(ThemeData(
-    primarySwatch: AuthPassTheme.primarySwatch,
+    // primarySwatch: AuthPassTheme.primarySwatch,
     typography: _getTypography(),
     useMaterial3: true,
   ));

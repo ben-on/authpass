@@ -4,6 +4,7 @@
 import 'package:authpass/bloc/analytics.dart';
 import 'package:authpass/bloc/kdbx/file_source_ui.dart';
 import 'package:authpass/bloc/kdbx_bloc.dart';
+import 'package:authpass/theme.dart';
 import 'package:authpass/ui/screens/group_edit.dart';
 import 'package:authpass/ui/widgets/link_button.dart';
 import 'package:authpass/utils/dialog_utils.dart';
@@ -862,7 +863,7 @@ class GroupListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
     final loc = AppLocalizations.of(context);
 
     return InkWell(
@@ -880,16 +881,16 @@ class GroupListTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: group.level * _levelIndent,
-                  maxWidth: group.level * _levelIndent,
-                  minHeight: 4,
-                  maxHeight: double.infinity,
-                ),
-                child: DecoratedBox(
-                    decoration: BoxDecoration(
-                        color: ThemeUtil.iconColor(theme, group.color)))),
+            // ConstrainedBox(
+            //     constraints: BoxConstraints(
+            //       minWidth: group.level * _levelIndent,
+            //       maxWidth: group.level * _levelIndent,
+            //       minHeight: 4,
+            //       maxHeight: double.infinity,
+            //     ),
+            //     child: DecoratedBox(
+            //         decoration: BoxDecoration(
+            //             color: AuthPassTheme.iconColor))),
             ..._buildSelectWidget(),
             group.group.customIcon?.let((customIcon) => Image.memory(
                       customIcon.data,
@@ -899,7 +900,7 @@ class GroupListTile extends StatelessWidget {
                     )) ??
                 Icon(
                   group.icon,
-                  color: ThemeUtil.iconColor(theme, group.color),
+                  color:AuthPassTheme.iconColor,
                   size: 24,
                 ),
             const SizedBox(width: 16),
@@ -907,7 +908,7 @@ class GroupListTile extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child:
-                    Text(group.name(loc), style: theme.textTheme.titleMedium),
+                    Text(group.name(loc), style: AuthPassTheme.titleMedium),
               ),
             ),
             const SizedBox(width: 8),

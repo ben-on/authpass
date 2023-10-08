@@ -375,8 +375,8 @@ class _AuthPassAppState extends State<AuthPassApp> with StreamSubscriberMixin {
         supportedLocales: AppLocalizations.supportedLocales,
         debugShowCheckedModeBanner: false,
         theme: _customizeTheme(authPassLightTheme, _appData),
-        darkTheme: _customizeTheme(authPassDarkTheme, _appData),
-        themeMode: _toThemeMode(_appData?.theme),
+        // darkTheme: _customizeTheme(authPassDarkTheme, _appData),
+        themeMode: ThemeMode.light,//_toThemeMode(_appData?.theme),
         locale: _parseLocale(_appData?.localeOverride),
 //        themeMode: ThemeMode.light,
         builder: (context, child) {
