@@ -844,7 +844,7 @@ class _PasswordListContentState extends State<PasswordListContent>
 
     // Search Part
     return AppBar(
-      toolbarHeight: width * 0.04,
+      toolbarHeight: 49,
       backgroundColor: AuthPassTheme.terinaryBackgroundColor,
       iconTheme: theme.primaryIconTheme,
       toolbarTextStyle: theme.primaryTextTheme.bodyMedium,
@@ -858,7 +858,7 @@ class _PasswordListContentState extends State<PasswordListContent>
       title: Theme(
         data: theme,
         child: SizedBox(
-          height: width * 0.025,
+          height: 30,
           child: TextField(
             textAlignVertical: TextAlignVertical.bottom,
             style: theme.textTheme.titleSmall,

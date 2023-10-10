@@ -5,10 +5,10 @@ class ProfileName extends StatelessWidget {
   final String name;
   const ProfileName({super.key, required this.name});
 
-   String getFirstCharsOfName(String inputString) {
+  String getFirstCharsOfName(String inputString) {
     List<String> names = inputString.split(' ');
-  return names[0][0].toUpperCase();
-}
+    return names[0][0].toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,25 +21,35 @@ class ProfileName extends StatelessWidget {
               height: 32,
               width: 32,
               decoration: BoxDecoration(
-                color: Color.fromRGBO(242, 212, 170, 1),
-                border: Border.all(color: Color.fromRGBO(0, 0, 0, .15), width: 1),
+                color: const Color.fromRGBO(242, 212, 170, 1),
+                border: Border.all(
+                    color: const Color.fromRGBO(0, 0, 0, .15), width: 1),
                 borderRadius: BorderRadius.circular(5),
               ),
               child: Center(
                 child: Text(getFirstCharsOfName(name)),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
-            Text('$name'),
-            SizedBox(
+            Text(
+              '$name',
+              style: const TextStyle(
+                overflow: TextOverflow.ellipsis,
+                color: Color(
+                    0xFF333333), // Hexadecimal representation of color #333
+                fontWeight: FontWeight.normal,
+                // You can set margin and cursor properties when using this style in your widget
+              ),
+            ),
+            const SizedBox(
               width: 5,
             ),
             GestureDetector(
                 onTap: () {},
                 child: const Icon(Icons.keyboard_arrow_down_outlined)),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
           ],

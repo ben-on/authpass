@@ -19,14 +19,16 @@ class PrimaryButton extends StatelessWidget {
     final childWidget = icon == null
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8), child: child)
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              icon!,
-              const SizedBox(width: 8.0),
-              child!,
-            ],
-          );
+        : child!;
+
+    // Row(
+    //     mainAxisSize: MainAxisSize.min,
+    //     children: <Widget>[
+    //       // icon!,
+    //       // const SizedBox(width: 8.0),
+    //       child!,
+    //     ],
+    //   );
     final theme = Theme.of(context);
     return Theme(
       data: _createMainButtonTheme(
@@ -35,20 +37,21 @@ class PrimaryButton extends StatelessWidget {
       ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0), // Adjust the radius as needed
-          side: BorderSide(
-            color: Colors.grey, // Border color
-            width: 1.0,          // Border width
-          ),
-        ),
-            foregroundColor: theme.colorScheme.onPrimary,
-            backgroundColor: theme.colorScheme.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(8.0), // Adjust the radius as needed
+              side: BorderSide(
+                color: Colors.blue, // Border color
+                width: 1.0, // Border width
+              ),
+            ),
+            foregroundColor: Colors.blue,
+            backgroundColor: Colors.white,
             elevation: 0,
             padding: large
                 ? const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 16,
+                    vertical: 8,
+                    horizontal: 8,
                   )
                 : null),
         onPressed: onPressed,

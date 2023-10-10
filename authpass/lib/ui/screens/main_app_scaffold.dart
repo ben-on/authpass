@@ -145,14 +145,22 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
             SizedBox(width: width * 0.005),
             const Text(
               'Personal',
-              style: AuthPassTheme.titleLarge,),
+              style: TextStyle(
+                fontSize: 16.0, // 1.25rem equivalent in Flutter (1 rem = 16px)
+                height: 1.6,    // 32px / 16px = 2 (equivalent line-height)
+                overflow: TextOverflow.ellipsis, // Text overflow with ellipsis
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF333333),  // Hexadecimal representation of color #333
+                // You can set margin and cursor properties when using this style in your widget
+              ),
+              ),
             GestureDetector(
                 onTap: () {},
                 child: const Icon(Icons.keyboard_arrow_down_outlined))
           ],
         )),
-        actions: [
-          const Align(
+        actions: const [
+          Align(
                     alignment: Alignment.centerRight,
                     child: NotificationIcon(
                       new_notifications: 0,
@@ -164,8 +172,9 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
       body: Row(
         children: <Widget>[
           Expanded(
+            flex: 1,
             child: SizedBox(
-              width: 384,
+              // width: 384,
               child: Navigator(
                 onGenerateRoute: (settings) {
                   assert(settings.name == Navigator.defaultRouteName);
@@ -213,6 +222,7 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
             ),
           ),
           Expanded(
+            flex: 2,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(left: BorderSide(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0), top: BorderSide(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0))
