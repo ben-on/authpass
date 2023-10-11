@@ -629,32 +629,32 @@ class _EntryDetailsState extends State<EntryDetails>
                   ),
                 )
                 .expand((el) => [ el, const SizedBox(height: 0)]),
-            AddFieldButton(
-              onAddField: (key) async {
-                final cf = commonFields[key];
-                if (cf == commonFields.otpAuth) {
-                  final secret = await _askForTotpSecret(context);
-                  if (secret == null) {
-                    return;
-                  }
-                  _logger.finer('Got otp auth: $secret');
-                  entry.setString(key,
-                      ProtectedValue.fromString(secret.toUri().toString()));
-                } else {
-                  entry.setString(
-                      key,
-                      cf?.protect == true
-                          ? ProtectedValue.fromString(CharConstants.empty)
-                          : PlainValue(CharConstants.empty));
-                }
-                Provider.of<Analytics>(context, listen: false)
-                    .events
-                    .trackAddField(key: key.key);
-                _initFields(
-                    Provider.of<CommonFields>(context, listen: false));
-                setState(() {});
-              },
-            ),
+            // AddFieldButton(
+            //   onAddField: (key) async {
+            //     final cf = commonFields[key];
+            //     if (cf == commonFields.otpAuth) {
+            //       final secret = await _askForTotpSecret(context);
+            //       if (secret == null) {
+            //         return;
+            //       }
+            //       _logger.finer('Got otp auth: $secret');
+            //       entry.setString(key,
+            //           ProtectedValue.fromString(secret.toUri().toString()));
+            //     } else {
+            //       entry.setString(
+            //           key,
+            //           cf?.protect == true
+            //               ? ProtectedValue.fromString(CharConstants.empty)
+            //               : PlainValue(CharConstants.empty));
+            //     }
+            //     Provider.of<Analytics>(context, listen: false)
+            //         .events
+            //         .trackAddField(key: key.key);
+            //     _initFields(
+            //         Provider.of<CommonFields>(context, listen: false));
+            //     setState(() {});
+            //   },
+            // ),
             // const Divider(),
             ...entry.binaryEntries.map((e) {
               final info = kdbxBloc.attachmentInfo(e.value);
@@ -702,11 +702,11 @@ class _EntryDetailsState extends State<EntryDetails>
                 ),
               );
             }),
-            LinkButton(
-              icon: const Icon(Icons.attach_file),
-              onPressed: _attachFile,
-              child: Text(loc.entryAddAttachment),
-            ),
+            // LinkButton(
+            //   icon: const Icon(Icons.attach_file),
+            //   onPressed: _attachFile,
+            //   child: Text(loc.entryAddAttachment),
+            // ),
             const SizedBox(height: 16),
           ],
         ),
@@ -1272,27 +1272,27 @@ class _EntryFieldState extends State<EntryField>
               Expanded(
                 child: _buildEntryFieldEditor(),
               ),
-              Container(
-                width: 48,
-                height: 48,
-                alignment: Alignment.center,
-                child: AnimatedCrossFade(
-                  duration: const Duration(milliseconds: 300),
-                  firstChild: PopupMenuButton<EntryAction>(
-                    icon: const Icon(Icons.more_vert),
-                    offset: const Offset(0, 32),
-                    onSelected: _handleMenuEntrySelected,
-                    itemBuilder: _buildMenuEntries,
-                  ),
-                  secondChild: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                  crossFadeState: task == null
-                      ? CrossFadeState.showFirst
-                      : CrossFadeState.showSecond,
-                ),
-              ),
+              // Container(
+              //   width: 48,
+              //   height: 48,
+              //   alignment: Alignment.center,
+              //   child: AnimatedCrossFade(
+              //     duration: const Duration(milliseconds: 300),
+              //     firstChild: PopupMenuButton<EntryAction>(
+              //       icon: const Icon(Icons.more_vert),
+              //       offset: const Offset(0, 32),
+              //       onSelected: _handleMenuEntrySelected,
+              //       itemBuilder: _buildMenuEntries,
+              //     ),
+              //     secondChild: const Padding(
+              //       padding: EdgeInsets.all(8.0),
+              //       child: CircularProgressIndicator(),
+              //     ),
+              //     crossFadeState: task == null
+              //         ? CrossFadeState.showFirst
+              //         : CrossFadeState.showSecond,
+              //   ),
+              // ),
 //            IconButton(
 //              icon: Icon(Icons.content_copy),
 //              tooltip: 'Copy to clipboard',
@@ -1893,7 +1893,7 @@ class StringEntryFieldEditor extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: Text(
                   "${commonField?.displayName .toLowerCase()?? fieldKey.key.toLowerCase()}",
-                  style: AuthPassTheme.lableText,
+                  // style: AuthPassTheme.lableText,
                 ))),
         SizedBox(
           width: 25,

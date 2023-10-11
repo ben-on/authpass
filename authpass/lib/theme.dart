@@ -25,8 +25,8 @@ class AuthPassTheme {
   static const titleLarge =  TextStyle(
     color: Colors.black87,
     fontFamily: "SegoeUI",
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
+    fontSize: 21,
+    fontWeight: FontWeight.bold,
 
   );
   static const titleMedium = TextStyle(
