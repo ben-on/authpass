@@ -117,9 +117,9 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen>
     return Scaffold(
       backgroundColor: AuthPassTheme.secondaryBackgroundColor,
       // appBar: AppBar(
-        
+
       //   automaticallyImplyLeading: false ,
-        
+
       //   title: Text(vm.label?.takeUnlessBlank() ?? loc.noTitle),
       //   actions: <Widget>[
       //     ...?!isDirty
@@ -130,10 +130,10 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen>
       //               onPressed: saveCallback,
       //             ),
       //           ],
-          
+
       //   ],
       // ),
-    
+
       body: WillPopScope(
         onWillPop: () async {
           if (!isFormDirty) {
@@ -259,11 +259,9 @@ class EntryDetails extends StatefulWidget {
 
 class _EntryDetailsState extends State<EntryDetails>
     with StreamSubscriberMixin {
-
   List<Tuple3<GlobalKey<_EntryFieldState>, KdbxKey, CommonField?>>? _fieldKeys;
 
   IntentActionRegistration? _shortcutRegistration;
-  
 
   @override
   void dispose() {
@@ -436,7 +434,6 @@ class _EntryDetailsState extends State<EntryDetails>
     final analytics = Provider.of<Analytics>(context, listen: false);
     final env = Provider.of<Env>(context);
 
-
     final commonFields = Provider.of<CommonFields>(context);
     final kdbxBloc = context.watch<KdbxBloc>();
     final vm = widget.entry;
@@ -456,161 +453,171 @@ class _EntryDetailsState extends State<EntryDetails>
               height: 50.5,
               decoration: BoxDecoration(
                 color: AuthPassTheme.primaryBackgoundColor,
-                border: Border(bottom: BorderSide(color: Color.fromRGBO(0, 0, 0, .15), width: 1.0),
-                ), 
+                border: Border(
+                  bottom: BorderSide(
+                      color: Color.fromRGBO(0, 0, 0, .15), width: 1.0),
                 ),
+              ),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment : MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   CustomIconButton(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                   SizedBox(width: 30),
-                  PrimaryButton(
-                    icon: const Icon(Icons.save, ),
-                    onPressed: widget.onSavedPressed,
-                    child: Text(loc.saveButtonLabel),
-                  ),
-        
-                          AppBarMenu.createOverflowMenuButton(
-          context,
-          builder: (context) => [
-            if (entry.isInRecycleBin()) ...[
-              PopupMenuItem(
-                value: () async {
-                  final e = entry;
-                  final result = await DialogUtils.showConfirmDialog(
-                    context: context,
-                    params: ConfirmDialogParams(
-                          content: loc.permanentlyDeleteEntryConfirm(
-                              e.label ?? CharConstants.empty),
-                    ),
-                  );
-                  if (!result) {
-                    analytics.events.trackPermanentlyDeleteEntryCancel();
-                    return;
-                  }
-                  subscriptions.cancelSubscriptions();
-                  final scaffoldManager = ScaffoldMessenger.of(context);
-                  Navigator.of(context).pop();
-                  entry.file.deletePermanently(entry);
-                  analytics.events.trackPermanentlyDeleteEntry();
-                  scaffoldManager.showSnackBar(SnackBar(
-                          content: Text(loc.permanentlyDeletedEntrySnackBar)));
-                },
-                child: ListTile(
-                  leading: const Icon(Icons.delete_forever),
-                  title: Text(loc.deletePermanentlyAction),
-                ),
-              ),
-              PopupMenuItem(
-                value: () async {
-                  final previousParent = entry.previousParentGroup
-                          .get()
-                          ?.let((that) => entry.file.findGroupByUuid(that));
-                  final entryDetails = entryDetailsKey.currentState;
-                  if (entryDetails == null) {
-                    return;
-                  }
-                  await entryDetails._showMoveToGroup(
-                    loc,
-                    vm.entry,
-                    toGroup: previousParent == null ||
-                                previousParent.isInRecycleBin() ||
-                                previousParent == entry.file.recycleBin
-                            ? null
-                            : previousParent,
-                  );
-                },
-                child: ListTile(
-                  leading: const Icon(Icons.restore_from_trash),
-                  title: Text(loc.restoreFromRecycleBinAction),
-                ),
-              ),
-            ] else ...[
-              PopupMenuItem(
-                value: () {
-                  final oldGroup = entry.parent;
-                  entry.file.deleteEntry(entry);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(loc.deletedEntry),
-                    action: SnackBarAction(
-                            label: loc.undoButtonLabel,
-                            onPressed: () {
-                              entry.file.move(entry, oldGroup!);
-                            }),
-                  ));
-                },
-                child: ListTile(
-                  leading: const Icon(Icons.delete),
-                  title: Text(loc.deleteAction),
-                ),
-              ),
-            ],
-            ...?!env.isDebug
-                ? null
-                : [
-                    PopupMenuItem(
-                          value: () {
-                            Clipboard.setData(ClipboardData(
-                                text: entry.toXml().toXmlString(pretty: true)));
-                          },
-                          child: ListTile(
-                            leading: const Icon(Icons.bug_report),
-                            title: Text(nonNls('Debug: Copy XML')),
-                          ),
-                    ),
-                  ]
-          ],
-        ),
-        
+                  CustomIconButton(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(width: 30),
+                      PrimaryButton(
+                        icon: const Icon(
+                          Icons.save,
+                        ),
+                        onPressed: widget.onSavedPressed,
+                        child: Text(loc.saveButtonLabel),
+                      ),
+                      AppBarMenu.createOverflowMenuButton(
+                        context,
+                        builder: (context) => [
+                          if (entry.isInRecycleBin()) ...[
+                            PopupMenuItem(
+                              value: () async {
+                                final e = entry;
+                                final result =
+                                    await DialogUtils.showConfirmDialog(
+                                  context: context,
+                                  params: ConfirmDialogParams(
+                                    content: loc.permanentlyDeleteEntryConfirm(
+                                        e.label ?? CharConstants.empty),
+                                  ),
+                                );
+                                if (!result) {
+                                  analytics.events
+                                      .trackPermanentlyDeleteEntryCancel();
+                                  return;
+                                }
+                                subscriptions.cancelSubscriptions();
+                                final scaffoldManager =
+                                    ScaffoldMessenger.of(context);
+                                Navigator.of(context).pop();
+                                entry.file.deletePermanently(entry);
+                                analytics.events.trackPermanentlyDeleteEntry();
+                                scaffoldManager.showSnackBar(SnackBar(
+                                    content: Text(
+                                        loc.permanentlyDeletedEntrySnackBar)));
+                              },
+                              child: ListTile(
+                                leading: const Icon(Icons.delete_forever),
+                                title: Text(loc.deletePermanentlyAction),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: () async {
+                                final previousParent = entry.previousParentGroup
+                                    .get()
+                                    ?.let((that) =>
+                                        entry.file.findGroupByUuid(that));
+                                final entryDetails =
+                                    entryDetailsKey.currentState;
+                                if (entryDetails == null) {
+                                  return;
+                                }
+                                await entryDetails._showMoveToGroup(
+                                  loc,
+                                  vm.entry,
+                                  toGroup: previousParent == null ||
+                                          previousParent.isInRecycleBin() ||
+                                          previousParent ==
+                                              entry.file.recycleBin
+                                      ? null
+                                      : previousParent,
+                                );
+                              },
+                              child: ListTile(
+                                leading: const Icon(Icons.restore_from_trash),
+                                title: Text(loc.restoreFromRecycleBinAction),
+                              ),
+                            ),
+                          ] else ...[
+                            PopupMenuItem(
+                              value: () {
+                                final oldGroup = entry.parent;
+                                entry.file.deleteEntry(entry);
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(loc.deletedEntry),
+                                  action: SnackBarAction(
+                                      label: loc.undoButtonLabel,
+                                      onPressed: () {
+                                        entry.file.move(entry, oldGroup!);
+                                      }),
+                                ));
+                              },
+                              child: ListTile(
+                                leading: const Icon(Icons.delete),
+                                title: Text(loc.deleteAction),
+                              ),
+                            ),
+                          ],
+                          ...?!env.isDebug
+                              ? null
+                              : [
+                                  PopupMenuItem(
+                                    value: () {
+                                      Clipboard.setData(ClipboardData(
+                                          text: entry
+                                              .toXml()
+                                              .toXmlString(pretty: true)));
+                                    },
+                                    child: ListTile(
+                                      leading: const Icon(Icons.bug_report),
+                                      title: Text(nonNls('Debug: Copy XML')),
+                                    ),
+                                  ),
+                                ]
                         ],
-                      )
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
             const SizedBox(height: 40),
-             Row(
+            Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
-        
-               children: [
-                 SizedBox(
-                          height: 90,
-                          width: 275,
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: EntryIcon(
-                              vm: vm,
-                              size: 64,
-                              fallback: (context) => IconSelectorFormField(
-                                initialValue: SelectedIcon.fromObject(entry),
-                                onSaved: (icon) {
-                                  icon?.when(predefined: (predefined) {
-                                    entry.customIcon = null;
-                                    entry.icon.set(predefined);
-                                  }, custom: (custom) {
-                                    entry.customIcon = custom;
-                                  });
-                                },
-                                kdbxFile: entry.file,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 25),
-        
-                         Expanded(
-                           child: Text(
-                              entry.file.body.meta.databaseName.get()!,
-                              style: AuthPassTheme.titleLarge,
-                            ),
-                         ),
-               ],
-             ),
-        
+              children: [
+                SizedBox(
+                  height: 90,
+                  width: 275,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: EntryIcon(
+                      vm: vm,
+                      size: 64,
+                      fallback: (context) => IconSelectorFormField(
+                        initialValue: SelectedIcon.fromObject(entry),
+                        onSaved: (icon) {
+                          icon?.when(predefined: (predefined) {
+                            entry.customIcon = null;
+                            entry.icon.set(predefined);
+                          }, custom: (custom) {
+                            entry.customIcon = custom;
+                          });
+                        },
+                        kdbxFile: entry.file,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 25),
+                Expanded(
+                  child: Text(
+                    entry.file.body.meta.databaseName.get()!,
+                    style: AuthPassTheme.titleLarge,
+                  ),
+                ),
+              ],
+            ),
+
             const SizedBox(height: 7),
             ..._fieldKeys!
                 .map(
@@ -628,7 +635,7 @@ class _EntryDetailsState extends State<EntryDetails>
                     }),
                   ),
                 )
-                .expand((el) => [ el, const SizedBox(height: 0)]),
+                .expand((el) => [el, const SizedBox(height: 0)]),
             // AddFieldButton(
             //   onAddField: (key) async {
             //     final cf = commonFields[key];
@@ -684,15 +691,13 @@ class _EntryDetailsState extends State<EntryDetails>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Text(e.key.key,
-                                style: theme.textTheme.titleMedium),
+                            Text(e.key.key, style: theme.textTheme.titleMedium),
                             const SizedBox(height: 2),
                             info == null
                                 ? Text(loc.sizeBytes(e.value.value.length),
                                     style: theme.textTheme.bodySmall)
                                 : Text(
-                                    loc.sizeBytesStoredAuthPassCloud(
-                                        info.size),
+                                    loc.sizeBytesStoredAuthPassCloud(info.size),
                                     style: theme.textTheme.bodySmall),
                           ],
                         ),
@@ -708,6 +713,11 @@ class _EntryDetailsState extends State<EntryDetails>
             //   child: Text(loc.entryAddAttachment),
             // ),
             const SizedBox(height: 16),
+            EntryMetaInfo(
+              label: loc.entryInfoLastModified,
+              value: formatUtils
+                  .formatDateFull(vm.entry.times.lastModificationTime.get()!),
+            )
           ],
         ),
       ),
@@ -1017,11 +1027,16 @@ class EntryMetaInfo extends StatelessWidget {
                     const SizedBox(width: 8),
                   ],
             Expanded(
-              child: Column(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Text(label!, style: theme.textTheme.bodySmall),
+                  SizedBox(width: 168),
+                  Text(label!),
+                  SizedBox(
+                    width: 30,
+                  ),
                   Text(
                     value!,
                     style: theme.textTheme.bodyLarge!
@@ -1239,7 +1254,6 @@ class _EntryFieldState extends State<EntryField>
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             const Icon(Icons.lock),
-            
             Text(loc.swipeCopyField),
           ],
         ),
@@ -1747,6 +1761,7 @@ class _OtpEntryFieldState extends _EntryFieldState {
     ]).toList();
   }
 }
+
 // Task-3
 class ObscuredEntryFieldEditor extends StatelessWidget {
   const ObscuredEntryFieldEditor({
@@ -1782,66 +1797,63 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
         SizedBox(
           width: 25,
         ),
-        
         Expanded(
           child: Stack(
             alignment: Alignment.centerRight,
             children: [
-        SizedBox(
-          height:30,
-          child: InputDecorator(
-            textAlignVertical: TextAlignVertical.top,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      // prefixIcon: SizedBox(
-                      // width: 250,
-                      // child: Align(
-                      //     alignment: Alignment.centerRight,
-                      //     child: Text(
-                      //       "${commonField?.displayName ?? fieldKey.key}",
-                      //     )))
-                      //     ,
-                      
-                    ),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        nonNls('  * ') * 10,
-                        style: AuthPassTheme.entryFieldText,
-                        
-                      ),
+              SizedBox(
+                height: 30,
+                child: InputDecorator(
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    // prefixIcon: SizedBox(
+                    // width: 250,
+                    // child: Align(
+                    //     alignment: Alignment.centerRight,
+                    //     child: Text(
+                    //       "${commonField?.displayName ?? fieldKey.key}",
+                    //     )))
+                    //     ,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      nonNls('  * ') * 10,
+                      style: AuthPassTheme.entryFieldText,
                     ),
                   ),
-        ),
-              
+                ),
+              ),
               Positioned.fill(
                 child: ClipRect(
                   child: LinkButton(
-                      onPressed: onPressed,
-                      child: Container( width: 5,
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(
-                          left: 24.0,
-                          right: 24.0,
-                          // bottom: 16,
-                        ),
-                        child: Text(
-                          "* " * 0,
-                          style: TextStyle(
-                            color:
-                                theme.isDarkTheme ? Colors.white : theme.primaryColor,
-                            shadows: [
-                              Shadow(
-                                  color: theme.isDarkTheme
-                                      ? Colors.black87
-                                      : Colors.white,
-                                  blurRadius: 5)
-                            ],
-                          ),
+                    onPressed: onPressed,
+                    child: Container(
+                      width: 5,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(
+                        left: 24.0,
+                        right: 24.0,
+                        // bottom: 16,
+                      ),
+                      child: Text(
+                        "* " * 0,
+                        style: TextStyle(
+                          color: theme.isDarkTheme
+                              ? Colors.white
+                              : theme.primaryColor,
+                          shadows: [
+                            Shadow(
+                                color: theme.isDarkTheme
+                                    ? Colors.black87
+                                    : Colors.white,
+                                blurRadius: 5)
+                          ],
                         ),
                       ),
                     ),
-                  
+                  ),
                 ),
               ),
               IconButton(
@@ -1885,38 +1897,39 @@ class StringEntryFieldEditor extends StatelessWidget {
     final color = ThemeUtil.iconColor(Theme.of(context), null);
     return Align(
       alignment: Alignment.centerRight,
-      child: Row( children: [
+      child: Row(children: [
         SizedBox(
             width: 250,
             height: 25,
             child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  "${commonField?.displayName .toLowerCase()?? fieldKey.key.toLowerCase()}",
+                  "${commonField?.displayName.toLowerCase() ?? fieldKey.key.toLowerCase()}",
                   // style: AuthPassTheme.lableText,
                 ))),
         SizedBox(
           width: 25,
         ),
-        
         Expanded(
           child: SizedBox(
-            height: 30, 
+            height: 30,
             child: TextFormField(
-              maxLines: 1, 
+              maxLines: 1,
               textAlignVertical: TextAlignVertical.top,
               key: formFieldKey,
               focusNode: focusNode,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, fontFamily: "Segoe UI"),
-              
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: "Segoe UI"),
               decoration: const InputDecoration(
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white, width : 0.6, )
-                ),
+                    borderSide: BorderSide(
+                  color: Colors.white,
+                  width: 0.6,
+                )),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color:Colors.black12, width: 0.6 )
-          
-                ),
+                    borderSide: BorderSide(color: Colors.black12, width: 0.6)),
                 filled: true,
                 fillColor: Colors.transparent,
                 // prefixIcon:
@@ -1926,8 +1939,8 @@ class StringEntryFieldEditor extends StatelessWidget {
               keyboardType: commonField?.keyboardType,
               autocorrect: commonField?.autocorrect ?? true,
               enableSuggestions: commonField?.enableSuggestions ?? true,
-              textCapitalization:
-                  commonField?.textCapitalization ?? TextCapitalization.sentences,
+              textCapitalization: commonField?.textCapitalization ??
+                  TextCapitalization.sentences,
               controller: controller,
               onSaved: onSaved,
             ),
@@ -1944,7 +1957,8 @@ class StringEntryFieldEditor extends StatelessWidget {
                   onPressed: delegate.generatePassword,
                   color: color);
             }
-            if (fieldKey == commonFields.url.key && controller!.text.isNotEmpty) {
+            if (fieldKey == commonFields.url.key &&
+                controller!.text.isNotEmpty) {
               return IconButton(
                   tooltip: '${loc.actionOpenUrl} (shift+cmd+U)', // NON-NLS
                   icon: const Icon(Icons.open_in_new),
